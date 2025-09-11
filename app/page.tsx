@@ -33,13 +33,111 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import axios from "axios";
+import React, { useState, useCallback, useRef, useEffect } from 'react';
 
-export default function DisplayPage() {
+export default function Home() {
+  const [isDragOver, setIsDragOver] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const [cardsData, setCardsData] = useState({
+    "domain": "",
+    "missing_data_ratio": 0,
+    "num_numeric_columns": 0,
+    "total_columns": 0,
+    "total_rows": 0
+  });
+  const [isUploading, setIsUploading] = useState(false);
+  const [dataExists, setDataExists] = useState(false);
+  const [isChecking, setIsChecking] = useState(true);
+
+  useEffect(()=>{
+    const initialCheck = async () => {
+      try {
+        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-table`);
+        setDataExists(response.data.status);
+
+        if(response.data.status == true){
+          try{
+            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/display-cards`);
+            setCardsData(response.data);
+          }catch(error){
+            console.log(error);
+          }
+        }
+
+        setIsChecking(false);
+      }catch (error){
+        console.log(error);
+      }
+    };
+    initialCheck();
+  }, [])
+
+  const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(true);
+  }, []);
+
+  const handleDragLeave = useCallback(() => {
+    setIsDragOver(false);
+  }, []);
+
+  const handleDrop = useCallback((e: React.DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const files = e.dataTransfer.files;
+    if (files.length > 0) {
+      handleFile(files[0]);
+    }
+  }, []);
+
+  const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    if (files && files.length > 0) {
+      handleFile(files[0]);
+    }
+  }, []);
+
+  const handleFile = async (file: File) => {
+    if (file.type === 'text/csv' || file.name.endsWith('.csv')) {
+      if (file.size <= 200 * 1024 * 1024) { // 200MB limit
+        setIsUploading(true); // Set uploading to true
+        const formData = new FormData();
+        formData.append('data', file);
+        
+        try{
+          const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload`, formData);
+          setCardsData(response.data);
+          setDataExists(true); // Assuming successful upload means data now exists
+        }catch(error){
+          console.log(error);
+        }finally{
+          setIsUploading(false); // Reset uploading state
+        }
+
+      } else {
+        alert('File size exceeds 200MB limit.');
+      }
+    } else {
+      alert('Only CSV files are supported.');
+    }
+  };
+
+  const handleButtonClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  async function deleteData(){
+    await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/table`);
+    setDataExists(false);
+    setCardsData({domain: "", missing_data_ratio: 0, num_numeric_columns: 0, total_columns: 0, total_rows: 0});
+  }
 
   async function test(){
     const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/test`);
     console.log(response);
   }
+
+
 
 
   return (
@@ -55,14 +153,77 @@ export default function DisplayPage() {
             </p>
           </div>
           <div className="flex items-center space-x-3">
-            <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-lg flex items-center justify-center">
-              <Icon icon="material-symbols:upload-file" className="w-6 h-6 text-white" />
+            <div className="rounded-lg flex items-center justify-center">
+              <Button onClick={deleteData} className="bg-red-500 hover:bg-red-700">Delete Data</Button>
             </div>
           </div>
         </div>
 
+        {/* isChecking */}
+        {isChecking && (
+          <Card className="border-2 border-dashed border-slate-300 bg-white/50 backdrop-blur-sm">
+            <CardContent className="px-6 py-12 text-center">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center">
+                  <Icon icon="material-symbols:sync" className="w-10 h-10 text-white animate-spin" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Checking data status...</h3>
+                  <p className="text-slate-600 mb-4">
+                    Please wait while we check for existing data
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* isUploading  */}
+        {isUploading && (
+          <Card className="border-2 border-dashed border-teal-400 bg-teal-50/50 backdrop-blur-sm">
+            <CardContent className="px-6 py-12 text-center">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-full flex items-center justify-center">
+                  <Icon icon="material-symbols:cloud-upload" className="w-10 h-10 text-white animate-bounce" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Uploading your CSV...</h3>
+                  <p className="text-slate-600 mb-4">
+                    Please wait while your file is being processed
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* data exists */}
+        {dataExists && (
+          <Card className="border-2 border-dashed border-green-400 bg-green-50/50 backdrop-blur-sm">
+            <CardContent className="px-6 py-12 text-center">
+              <div className="flex flex-col items-center space-y-4">
+                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
+                  <Icon icon="material-symbols:check-circle" className="w-10 h-10 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Data Already Exists</h3>
+                  <p className="text-slate-600 mb-4">
+                    It looks like you already have data uploaded. You can proceed to explore.
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Upload card */}
-        <Card className="border-2 border-dashed border-slate-300 hover:border-teal-400 transition-colors duration-300 bg-white/50 backdrop-blur-sm">
+        {!dataExists && !isUploading && !isChecking && <Card
+          className={`border-2 border-dashed ${isDragOver ? 'border-teal-500 bg-teal-50' : 'border-slate-300'} hover:border-teal-400 transition-colors duration-300 bg-white/50 backdrop-blur-sm`}
+          onDragOver={handleDragOver}
+          onDragLeave={handleDragLeave}
+          onDrop={handleDrop}
+          onClick={handleButtonClick}
+        >
           <CardContent className="px-6 py-12 text-center">
             <div className="flex flex-col items-center space-y-4">
               <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-full flex items-center justify-center">
@@ -74,13 +235,20 @@ export default function DisplayPage() {
                   Drag and drop your file here, or click to browse
                 </p>
               </div>
-              <Button onClick={test} className="bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
+              <input
+                type="file"
+                ref={fileInputRef}
+                onChange={handleFileChange}
+                accept=".csv"
+                className="hidden"
+              />
+              <Button onClick={handleButtonClick} className="bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
                 Choose File
               </Button>
-              <p className="text-sm text-slate-500">Supported formats: CSV files up to 10MB</p>
+              <p className="text-sm text-slate-500">Supported formats: CSV files up to 200MB</p>
             </div>
           </CardContent>
-        </Card>
+        </Card>}
 
         
 
@@ -94,7 +262,7 @@ export default function DisplayPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-600">Domain</p>
-                  <p className="text-xl font-bold text-slate-800">Sales Data</p>
+                  <p className="text-xl font-bold text-slate-800">{cardsData.domain}</p>
                 </div>
               </div>
             </CardContent>
@@ -107,7 +275,7 @@ export default function DisplayPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-600">Total Rows</p>
-                  <p className="text-xl font-bold text-slate-800">1,247</p>
+                  <p className="text-xl font-bold text-slate-800">{cardsData.total_rows}</p>
                 </div>
               </div>
             </CardContent>
@@ -120,7 +288,7 @@ export default function DisplayPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-600">Total Columns</p>
-                  <p className="text-xl font-bold text-slate-800">12</p>
+                  <p className="text-xl font-bold text-slate-800">{cardsData.total_columns}</p>
                 </div>
               </div>
             </CardContent>
@@ -133,7 +301,7 @@ export default function DisplayPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-600">Missing Data</p>
-                  <p className="text-xl font-bold text-slate-800">2.3%</p>
+                  <p className="text-xl font-bold text-slate-800">{cardsData.missing_data_ratio}%</p>
                 </div>
               </div>
             </CardContent>
@@ -146,7 +314,7 @@ export default function DisplayPage() {
                 </div>
                 <div>
                   <p className="text-sm font-medium text-slate-600">Numeric Columns</p>
-                  <p className="text-xl font-bold text-slate-800">8</p>
+                  <p className="text-xl font-bold text-slate-800">{cardsData.num_numeric_columns}</p>
                 </div>
               </div>
             </CardContent>
