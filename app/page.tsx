@@ -33,7 +33,54 @@ import {
   PaginationNext,
 } from "@/components/ui/pagination";
 import axios from "axios";
-import React, { useState, useCallback, useRef, useEffect } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useMemo } from 'react';
+
+const MAX_PAGE_LINKS = 5; // Max 5 page links (e.g., 1 ... 3 4 5 ... 10)
+
+const MAX_VISIBLE_PAGE_NUMBERS = 5; // Max 5 page numbers (e.g., 1 ... 3 4 5 ... 10)
+const ITEMS_PER_PAGE = 10; // Number of items to display per page
+
+const getPaginationPages = (currentPage: number, lastPage: number) => {
+  const pages: (number | string)[] = [];
+
+  if (lastPage <= MAX_VISIBLE_PAGE_NUMBERS) {
+    for (let i = 1; i <= lastPage; i++) {
+      pages.push(i);
+    }
+  } else {
+    const numMiddlePages = 3; // Number of pages directly around currentPage (e.g., C-1, C, C+1)
+    const firstPage = 1;
+    const lastNumPage = lastPage;
+
+    // Pages near the beginning (1, 2, 3, 4, ..., lastPage)
+    if (currentPage <= numMiddlePages) {
+      for (let i = 1; i <= numMiddlePages + 1; i++) { // e.g., 1,2,3,4
+        pages.push(i);
+      }
+      pages.push('...');
+      pages.push(lastNumPage);
+    }
+    // Pages near the end (1, ..., lastPage-3, lastPage-2, lastPage-1, lastPage)
+    else if (currentPage >= lastNumPage - numMiddlePages + 1) { // e.g., if lastPage=10, numMiddlePages=3, then 10-3+1=8. CP=8,9,10
+      pages.push(firstPage);
+      pages.push('...');
+      for (let i = lastNumPage - (numMiddlePages + 1) + 1; i <= lastNumPage; i++) { // e.g., 10-4+1 = 7. 7,8,9,10
+        pages.push(i);
+      }
+    }
+    // Pages in the middle (1, ..., C-1, C, C+1, ..., lastPage)
+    else {
+      pages.push(firstPage);
+      pages.push('...');
+      for (let i = currentPage - 1; i <= currentPage + 1; i++) {
+        pages.push(i);
+      }
+      pages.push('...');
+      pages.push(lastNumPage);
+    }
+  }
+  return pages;
+};
 
 export default function Home() {
   const [isDragOver, setIsDragOver] = useState(false);
@@ -48,6 +95,54 @@ export default function Home() {
   const [isUploading, setIsUploading] = useState(false);
   const [dataExists, setDataExists] = useState(false);
   const [isChecking, setIsChecking] = useState(true);
+  const [data, setData] = useState([]);
+  const [page, setPage] = useState(1);
+  const [lastPage, setLastPage] = useState(1);
+  const [totalCount, setTotalCount] = useState(0);
+  const [selectedColumns, setSelectedColumns] = useState<{ [key: string]: boolean }>({});
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter data based on search query
+  const filteredData = useMemo(() => {
+    if (!searchQuery) {
+      return data; // No search query, return original data
+    }
+    const lowerCaseSearchQuery = searchQuery.toLowerCase();
+    return data.filter(row =>
+      Object.keys(row).some(key => {
+        if (selectedColumns[key]) { // Only search in selected columns
+          return String(row[key]).toLowerCase().includes(lowerCaseSearchQuery);
+        }
+        return false;
+      })
+    );
+  }, [data, searchQuery, selectedColumns]);
+
+  // Calculate last page for filtered data
+  const filteredLastPage = useMemo(() => {
+    return Math.ceil(totalCount / ITEMS_PER_PAGE);
+  }, [totalCount]);
+
+  const fetchData = useCallback(async (currentPage: number) => {
+    try {
+      const tableData = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/data?page=${currentPage}&limit=10`);
+      setData(tableData.data.data);
+      setLastPage(tableData.data.lastPage);
+      setTotalCount(tableData.data.totalCount);
+
+      // Initialize selectedColumns if it's empty (first data load)
+      if (Object.keys(selectedColumns).length === 0 && tableData.data.data.length > 0) {
+        const initialColumns: { [key: string]: boolean } = {};
+        Object.keys(tableData.data.data[0]).forEach(column => {
+          initialColumns[column] = true;
+        });
+        setSelectedColumns(initialColumns);
+      }
+
+    } catch (error) {
+      console.log(error);
+    }
+  }, [selectedColumns]);
 
   useEffect(()=>{
     const initialCheck = async () => {
@@ -59,6 +154,8 @@ export default function Home() {
           try{
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/display-cards`);
             setCardsData(response.data);
+
+            await fetchData(page);
           }catch(error){
             console.log(error);
           }
@@ -70,7 +167,7 @@ export default function Home() {
       }
     };
     initialCheck();
-  }, [])
+  }, [page, fetchData, selectedColumns])
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -107,7 +204,8 @@ export default function Home() {
         try{
           const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/upload`, formData);
           setCardsData(response.data);
-          setDataExists(true); // Assuming successful upload means data now exists
+          setDataExists(true); // Assuming successful upload means data now exists // Fetch first page after upload
+          await fetchData(page); // Re-fetch data after successful upload
         }catch(error){
           console.log(error);
         }finally{
@@ -129,7 +227,11 @@ export default function Home() {
   async function deleteData(){
     await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/table`);
     setDataExists(false);
+    setData([]);
     setCardsData({domain: "", missing_data_ratio: 0, num_numeric_columns: 0, total_columns: 0, total_rows: 0});
+    setPage(1);
+    setLastPage(1);
+    setTotalCount(0);
   }
 
   async function test(){
@@ -179,7 +281,7 @@ export default function Home() {
         )}
 
         {/* isUploading  */}
-        {isUploading && (
+        {(isUploading && !dataExists) && (
           <Card className="border-2 border-dashed border-teal-400 bg-teal-50/50 backdrop-blur-sm">
             <CardContent className="px-6 py-12 text-center">
               <div className="flex flex-col items-center space-y-4">
@@ -198,7 +300,7 @@ export default function Home() {
         )}
 
         {/* data exists */}
-        {dataExists && (
+        {(dataExists && !isChecking) && (
           <Card className="border-2 border-dashed border-green-400 bg-green-50/50 backdrop-blur-sm">
             <CardContent className="px-6 py-12 text-center">
               <div className="flex flex-col items-center space-y-4">
@@ -242,9 +344,9 @@ export default function Home() {
                 accept=".csv"
                 className="hidden"
               />
-              <Button onClick={handleButtonClick} className="bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
+              <label className="bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
                 Choose File
-              </Button>
+              </label>
               <p className="text-sm text-slate-500">Supported formats: CSV files up to 200MB</p>
             </div>
           </CardContent>
@@ -335,20 +437,6 @@ export default function Home() {
                   Advanced data exploration and insights platform
                 </p>
               </div>
-              <div className="flex items-center space-x-4">
-                <div className="flex items-center space-x-2 bg-gradient-to-r from-teal-50 to-cyan-50 px-3 py-2 rounded-lg border border-teal-100">
-                  <Icon icon="material-symbols:filter-list" className="w-5 h-5 text-teal-600" />
-                  <span className="text-sm font-medium text-slate-700">
-                    Rows left after filtering:
-                  </span>
-                  <Badge
-                    variant="secondary"
-                    className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white border-0 shadow-sm"
-                  >
-                    1,247
-                  </Badge>
-                </div>
-              </div>
             </div>
           </CardHeader>
           
@@ -363,20 +451,11 @@ export default function Home() {
                   <Input
                     className="pl-10 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-teal-400 focus:ring-teal-400/20 shadow-sm"
                     placeholder="Search across all columns..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
                   />
                 </div>
               </div>
-              <Select>
-                <SelectTrigger className="w-full lg:w-48 bg-white/80 backdrop-blur-sm border-slate-300 shadow-sm hover:border-teal-300 transition-colors">
-                  <SelectValue placeholder="Filter by Status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Status</SelectItem>
-                  <SelectItem value="active">Active</SelectItem>
-                  <SelectItem value="inactive">Inactive</SelectItem>
-                  <SelectItem value="pending">Pending</SelectItem>
-                </SelectContent>
-              </Select>
               <Popover>
                 <PopoverTrigger asChild>
                   <Button
@@ -397,42 +476,23 @@ export default function Home() {
                   <div className="space-y-3">
                     <h4 className="font-medium text-sm text-slate-800">Toggle Columns</h4>
                     <div className="space-y-2">
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="col-id" defaultChecked />
-                        <Label htmlFor="col-id" className="text-sm">
-                          ID
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="col-name" defaultChecked />
-                        <Label htmlFor="col-name" className="text-sm">
-                          Name
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="col-email" defaultChecked />
-                        <Label htmlFor="col-email" className="text-sm">
-                          Email
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="col-status" defaultChecked />
-                        <Label htmlFor="col-status" className="text-sm">
-                          Status
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="col-revenue" defaultChecked />
-                        <Label htmlFor="col-revenue" className="text-sm">
-                          Revenue
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        <Checkbox id="col-date" />
-                        <Label htmlFor="col-date" className="text-sm">
-                          Date
-                        </Label>
-                      </div>
+                      {Object.keys(selectedColumns).map((columnName) => (
+                        <div key={columnName} className="flex items-center space-x-2">
+                          <Checkbox
+                            id={`col-${columnName}`}
+                            checked={selectedColumns[columnName]}
+                            onCheckedChange={(checked) => {
+                              setSelectedColumns(prev => ({
+                                ...prev,
+                                [columnName]: Boolean(checked),
+                              }));
+                            }}
+                          />
+                          <Label htmlFor={`col-${columnName}`} className="text-sm">
+                            {columnName}
+                          </Label>
+                        </div>
+                      ))}
                     </div>
                   </div>
                 </PopoverContent>
@@ -442,135 +502,54 @@ export default function Home() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-gradient-to-r from-slate-50/80 to-slate-100/60 border-b border-slate-200">
-                    <TableHead className="font-semibold text-slate-700 bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent">
-                      ID
-                    </TableHead>
-                    <TableHead className="font-semibold text-slate-700 bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent">
-                      Name
-                    </TableHead>
-                    <TableHead className="font-semibold text-slate-700 bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent">
-                      Email
-                    </TableHead>
-                    <TableHead className="font-semibold text-slate-700 bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent">
-                      Status
-                    </TableHead>
-                    <TableHead className="font-semibold text-slate-700 text-right bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent">
-                      Revenue
-                    </TableHead>
+                    {filteredData.length > 0 && Object.keys(filteredData[0]).filter(feature => selectedColumns[feature]).map((feature)=>{
+                      return (
+                        <TableHead key={feature} className="font-semibold bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent">
+                        {feature}
+                        </TableHead>
+                      )
+                    })}
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  <TableRow className="hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-cyan-50/30 transition-all duration-300 border-b border-slate-100">
-                    <TableCell className="font-medium text-slate-800">001</TableCell>
-                    <TableCell className="text-slate-700">John Smith</TableCell>
-                    <TableCell className="text-slate-600">john.smith@example.com</TableCell>
-                    <TableCell>
-                      <Badge className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200 shadow-sm">
-                        Active
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium text-slate-800">$45,230</TableCell>
-                  </TableRow>
-                  <TableRow className="hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-cyan-50/30 transition-all duration-300 border-b border-slate-100">
-                    <TableCell className="font-medium text-slate-800">002</TableCell>
-                    <TableCell className="text-slate-700">Sarah Johnson</TableCell>
-                    <TableCell className="text-slate-600">sarah.j@example.com</TableCell>
-                    <TableCell>
-                      <Badge className="bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 border-yellow-200 shadow-sm">
-                        Pending
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium text-slate-800">$32,180</TableCell>
-                  </TableRow>
-                  <TableRow className="hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-cyan-50/30 transition-all duration-300 border-b border-slate-100">
-                    <TableCell className="font-medium text-slate-800">003</TableCell>
-                    <TableCell className="text-slate-700">Michael Brown</TableCell>
-                    <TableCell className="text-slate-600">m.brown@example.com</TableCell>
-                    <TableCell>
-                      <Badge className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200 shadow-sm">
-                        Active
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium text-slate-800">$67,890</TableCell>
-                  </TableRow>
-                  <TableRow className="hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-cyan-50/30 transition-all duration-300 border-b border-slate-100">
-                    <TableCell className="font-medium text-slate-800">004</TableCell>
-                    <TableCell className="text-slate-700">Emily Davis</TableCell>
-                    <TableCell className="text-slate-600">emily.davis@example.com</TableCell>
-                    <TableCell>
-                      <Badge className="bg-gradient-to-r from-red-100 to-rose-100 text-red-800 border-red-200 shadow-sm">
-                        Inactive
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium text-slate-800">$12,450</TableCell>
-                  </TableRow>
-                  <TableRow className="hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-cyan-50/30 transition-all duration-300 border-b border-slate-100">
-                    <TableCell className="font-medium text-slate-800">005</TableCell>
-                    <TableCell className="text-slate-700">David Wilson</TableCell>
-                    <TableCell className="text-slate-600">d.wilson@example.com</TableCell>
-                    <TableCell>
-                      <Badge className="bg-gradient-to-r from-green-100 to-emerald-100 text-green-800 border-green-200 shadow-sm">
-                        Active
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium text-slate-800">$89,340</TableCell>
-                  </TableRow>
-                  <TableRow className="hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-cyan-50/30 transition-all duration-300 border-b border-slate-100">
-                    <TableCell className="font-medium text-slate-800">006</TableCell>
-                    <TableCell className="text-slate-700">Lisa Anderson</TableCell>
-                    <TableCell className="text-slate-600">lisa.a@example.com</TableCell>
-                    <TableCell>
-                      <Badge className="bg-gradient-to-r from-yellow-100 to-amber-100 text-yellow-800 border-yellow-200 shadow-sm">
-                        Pending
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-right font-medium text-slate-800">$54,720</TableCell>
-                  </TableRow>
+                  {filteredData.length > 0 && filteredData.map((record, rowIndex) => (
+                    <TableRow key={rowIndex} className="hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-cyan-50/30 transition-all duration-300 border-b border-slate-100">
+                      {Object.keys(record).filter(feature => selectedColumns[feature]).map((feature, colIndex) => (
+                        <TableCell key={colIndex} className="text-slate-700">{String(record[feature])}</TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
                 </TableBody>
               </Table>
             </div>
             <div className="flex items-center justify-between bg-gradient-to-r from-slate-50/50 to-slate-100/30 p-4 rounded-lg border border-slate-200">
-              <p className="text-sm text-slate-600">Showing 1 to 6 of 1,247 results</p>
               <Pagination>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
-                      href="#"
-                      className="hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:border-teal-200 transition-all duration-300"
+                      className="hover:cursor-pointer hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:border-teal-200 transition-all duration-300"
+                      onClick={() => setPage(prev => Math.max(1, prev - 1))}
                     />
                   </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink
-                      href="#"
-                      isActive
-                      className="bg-gradient-to-r from-teal-500 to-cyan-600 text-white shadow-lg hover:shadow-xl transition-all duration-300"
-                    >
-                      1
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink
-                      href="#"
-                      className="hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 transition-all duration-300"
-                    >
-                      2
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationLink
-                      href="#"
-                      className="hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 transition-all duration-300"
-                    >
-                      3
-                    </PaginationLink>
-                  </PaginationItem>
-                  <PaginationItem>
-                    <PaginationEllipsis />
-                  </PaginationItem>
+                  {getPaginationPages(page, filteredLastPage).map((p, index) => (
+                    <PaginationItem key={index}>
+                      {p === '...' ? (
+                        <PaginationEllipsis />
+                      ) : (
+                        <PaginationLink
+                          isActive={page === p}
+                          onClick={() => setPage(p as number)}
+                          className="hover:cursor-pointer hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 transition-all duration-300"
+                        >
+                          {p}
+                        </PaginationLink>
+                      )}
+                    </PaginationItem>
+                  ))}
                   <PaginationItem>
                     <PaginationNext
-                      href="#"
-                      className="hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:border-teal-200 transition-all duration-300"
+                      className="hover:cursor-pointer hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:border-teal-200 transition-all duration-300"
+                      onClick={() => setPage(prev => Math.min(filteredLastPage, prev + 1))}
                     />
                   </PaginationItem>
                 </PaginationContent>
