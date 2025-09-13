@@ -243,7 +243,7 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen from-slate-50 to-slate-100 p-6">
       <div className="mx-auto max-w-7xl space-y-8"> 
         
         {/* header */}
