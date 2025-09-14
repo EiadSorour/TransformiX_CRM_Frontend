@@ -4,13 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Home, Bot } from "lucide-react";
+import Image from "next/image";
 
 export default function Sidebar() {
   const pathname = usePathname();
 
   return (
     <aside className="fixed inset-y-0 left-0 z-10 w-64 border-r bg-background p-4 flex flex-col">
-      <div className="mb-6 text-xl font-semibold text-primary">TransformiX CRM</div>
+      <Link href={"/"}><Image src="/Logo.webp" alt="TransformiX CRM Logo" width={250} height={250} /></Link>
       <nav className="flex flex-col gap-2 flex-grow">
         <Link
           href="/"
