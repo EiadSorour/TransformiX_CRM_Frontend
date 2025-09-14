@@ -101,6 +101,7 @@ export default function Home() {
   const [totalCount, setTotalCount] = useState(0);
   const [selectedColumns, setSelectedColumns] = useState<{ [key: string]: boolean }>({});
   const [searchQuery, setSearchQuery] = useState('');
+  const [deletingData, setDeletingData] = useState(false);
 
   // Filter data based on search query
   const filteredData = useMemo(() => {
@@ -225,20 +226,25 @@ export default function Home() {
   };
 
   async function deleteData(){
-    await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/table`);
-    setDataExists(false);
-    setData([]);
-    setCardsData({domain: "", missing_data_ratio: 0, num_numeric_columns: 0, total_columns: 0, total_rows: 0});
-    setPage(1);
-    setLastPage(1);
-    setTotalCount(0);
+    setDeletingData(true);
+    
+    try{
+      await axios.delete(`${process.env.NEXT_PUBLIC_BACKEND_URL}/table`);
+      setDataExists(false);
+      setData([]);
+      setCardsData({domain: "", missing_data_ratio: 0, num_numeric_columns: 0, total_columns: 0, total_rows: 0});
+      setPage(1);
+      setLastPage(1);
+      setTotalCount(0);
+    } finally{
+      setDeletingData(false);
+    }
   }
 
   async function test(){
     const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/test`);
     console.log(response);
   }
-
 
 
 
@@ -256,7 +262,9 @@ export default function Home() {
           </div>
           <div className="flex items-center space-x-3">
             <div className="rounded-lg flex items-center justify-center">
-              <Button onClick={deleteData} className="bg-red-500 hover:bg-red-700">Delete Data</Button>
+              <Button disabled={deletingData || isUploading || isChecking} onClick={deleteData} className="bg-red-500 hover:bg-red-700">
+                {deletingData ? "Deleting..." : "Delete Data"}
+              </Button>
             </div>
           </div>
         </div>
@@ -523,7 +531,7 @@ export default function Home() {
               </Table>
             </div>
             <div className="flex items-center justify-between bg-gradient-to-r from-slate-50/50 to-slate-100/30 p-4 rounded-lg border border-slate-200">
-              <Pagination>
+              {!deletingData && <Pagination>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
@@ -553,7 +561,7 @@ export default function Home() {
                     />
                   </PaginationItem>
                 </PaginationContent>
-              </Pagination>
+              </Pagination>}
             </div>
           </CardContent>
         </Card>

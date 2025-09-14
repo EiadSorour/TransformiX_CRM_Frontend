@@ -39,11 +39,11 @@ function AIAssistantPage() {
     checkData();
   }, [])
 
-  function onQuestionChange(event : any){
+  function onQuestionChange(event : React.ChangeEvent<HTMLInputElement>){
     setQuestion(event.target.value);
   }
 
-  async function askQuestion(event:any){
+  async function askQuestion(){
     setIsAnalysing(true);
     try {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/question-answer`, {question});
@@ -52,14 +52,6 @@ function AIAssistantPage() {
     } finally {
       setIsAnalysing(false);
     }
-  }
-
-  function onSmartQuestionClicked(event:any){
-
-  }
-
-  function onFollowQuestionClicked(event:any){
-
   }
 
   return (
@@ -116,7 +108,7 @@ function AIAssistantPage() {
               </div>
               <h3 className="text-xl font-semibold text-[#1e3a8a]">Ask Your Question</h3>
             </div>
-            <div className="flex gap-4">
+            <div className="flex gap-4 items-center">
               <Input
                 disabled={!dataExists || isAnalysing}
                 onChange={onQuestionChange}
@@ -237,7 +229,9 @@ function AIAssistantPage() {
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
                     <span className="text-sm font-bold">Confidence Level: </span>
-                    <span className="ml-2 text-sm font-medium text-green-600">{analysis.dataEvidence.confidence}</span>
+                    <span 
+                      className={`ml-2 text-sm font-medium ${analysis.dataEvidence.confidence === "high" ? "text-green-600" : analysis.dataEvidence.confidence === "low" ? "text-red-600" : "text-yellow-600"}`}
+                    >{analysis.dataEvidence.confidence}</span>
                   </div>
                 </div>
 
