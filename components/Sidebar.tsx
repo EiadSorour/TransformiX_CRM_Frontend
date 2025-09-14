@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Home, Bot } from "lucide-react";
+import { Home, Bot, LayoutDashboard, ChartNoAxesCombined } from "lucide-react";
 import Image from "next/image";
 
 export default function Sidebar() {
@@ -32,6 +32,26 @@ export default function Sidebar() {
         >
           <Bot className="h-4 w-4" />
           AI Assistant
+        </Link>
+        <Link
+          href="/dashboard"
+          className={cn(
+            "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-primary",
+            pathname === "/dashboard" ? "bg-muted text-primary" : "text-muted-foreground"
+          )}
+        >
+          <LayoutDashboard className="h-4 w-4" />
+          Dashboard
+        </Link>
+        <Link
+          href="/pattern-analysis"
+          className={cn(
+            "flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium transition-colors hover:bg-muted hover:text-primary",
+            pathname === "/pattern-analysis" ? "bg-muted text-primary" : "text-muted-foreground"
+          )}
+        >
+          <ChartNoAxesCombined className="h-4 w-4" />
+          Pattern Analysis
         </Link>
       </nav>
     </aside>
