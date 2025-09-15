@@ -102,6 +102,7 @@ export default function Home() {
   const [selectedColumns, setSelectedColumns] = useState<{ [key: string]: boolean }>({});
   const [searchQuery, setSearchQuery] = useState('');
   const [deletingData, setDeletingData] = useState(false);
+  const [fetchingData, setFetchingData] = useState(false);
 
   // Filter data based on search query
   const filteredData = useMemo(() => {
@@ -125,6 +126,9 @@ export default function Home() {
   }, [totalCount]);
 
   const fetchData = useCallback(async (currentPage: number) => {
+    
+    setFetchingData(true);
+    
     try {
       const tableData = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/data?page=${currentPage}&limit=10`);
       setData(tableData.data.data);
@@ -142,24 +146,31 @@ export default function Home() {
 
     } catch (error) {
       console.log(error);
+    } finally{
+      setFetchingData(false);
     }
   }, [selectedColumns]);
 
   useEffect(()=>{
     const initialCheck = async () => {
       try {
-        const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-table`);
-        setDataExists(response.data.status);
 
-        if(response.data.status == true){
-          try{
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/display-cards`);
-            setCardsData(response.data);
-
-            await fetchData(page);
-          }catch(error){
-            console.log(error);
+        if(!dataExists){
+          const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-table`);
+          setDataExists(response.data.status);
+  
+          if(response.data.status == true){
+            try{
+              const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/display-cards`);
+              setCardsData(response.data);
+  
+              await fetchData(page);
+            }catch(error){
+              console.log(error);
+            }
           }
+        }else{
+          await fetchData(page);
         }
 
         setIsChecking(false);
@@ -169,6 +180,7 @@ export default function Home() {
     };
     initialCheck();
   }, [page, fetchData, selectedColumns])
+
 
   const handleDragOver = useCallback((e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
@@ -531,7 +543,7 @@ export default function Home() {
               </Table>
             </div>
             <div className="flex items-center justify-between bg-gradient-to-r from-slate-50/50 to-slate-100/30 p-4 rounded-lg border border-slate-200">
-              {!deletingData && <Pagination>
+              {!deletingData && <Pagination hidden={fetchingData}>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious

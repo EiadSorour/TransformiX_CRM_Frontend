@@ -6,12 +6,16 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useEffect, useState } from "react";
 import axios from "axios";
-import { LogIn } from "lucide-react";
+import Markdown from 'react-markdown';
+import Skeleton from 'react-loading-skeleton'
+import 'react-loading-skeleton/dist/skeleton.css'
+
 
 function AIAssistantPage() {
 
-  const [question, setQuestion] = useState("");
+  const [checkingData, setCheckingData] = useState(true);
   const [dataExists, setDataExists] = useState(false);
+  const [question, setQuestion] = useState("");
   const [dataAnalyzed, setDataAnalyzed] = useState(false);
   const [smartQuestions, setSmartQuestions] = useState([{title:"" , question: ""}]);
   const [analysis, setAnalysis] = useState(
@@ -49,6 +53,8 @@ function AIAssistantPage() {
       const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/question-answer`, {question});
       setDataAnalyzed(true);
       setAnalysis(response.data);
+      console.log(response.data);
+      
     } finally {
       setIsAnalysing(false);
     }
@@ -81,6 +87,10 @@ function AIAssistantPage() {
                 <h3 className="text-xl font-semibold text-[#1e3a8a]">Smart Question Examples</h3>
               </div>
 
+              
+
+              {smartQuestions.length > 1 ? 
+
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
                 {smartQuestions.map((question, index) => (
@@ -93,13 +103,37 @@ function AIAssistantPage() {
                     </div>
                   </div>
                 ))}
+              </div> : 
               
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      <Skeleton count={3}/>
+                </div>
+                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      <Skeleton count={3}/>
+                </div>
+                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      <Skeleton count={3}/>
+                </div>
+                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      <Skeleton count={3}/>
+                </div>
+                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      <Skeleton count={3}/>
+                </div>
+                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                      <Skeleton count={3}/>
+                </div>
               </div>
+            }
+
+
             </CardContent>
           </Card>}
 
         {/* ask ai */}
-        {!dataExists && <p className="text-center pb-3 text-red-600 font-bold">Please upload your data for analysis.</p>}
+        {(!dataExists && !checkingData) && <p className="text-center pb-3 text-red-600 font-bold">Please upload your data for analysis.</p>}
         <Card className="mb-8">
           <CardContent className="px-6 py-6">
             <div className="flex items-center mb-4">
@@ -147,9 +181,9 @@ function AIAssistantPage() {
               <div className="space-y-4">
                 <div className="p-4 bg-muted/50 rounded-lg">
                   <p className="text-sm text-muted-foreground mb-2">AI-Powered Insight</p>
-                  <p className="text-foreground">
+                  <Markdown>
                     {analysis.smartAnalysis.analysis}
-                  </p>
+                  </Markdown>
                 </div>
                 <div className="flex items-center text-sm text-[#0891b2]">
                   <Icon icon="ph:check-circle-bold" className="w-4 h-4 mr-2" />
@@ -185,7 +219,7 @@ function AIAssistantPage() {
           </Card>
 
           {/* relevant statistics */}
-          <Card className="border-2 border-[#06b6d4]/20">
+          {analysis.relevantStatistics.length > 0 && <Card className="border-2 border-[#06b6d4]/20">
             <CardContent className="px-6 py-6">
               <div className="flex items-center mb-4">
                 <div className="w-8 h-8 bg-gradient-to-br from-[#06b6d4] to-[#0891b2] rounded-lg flex items-center justify-center mr-3">
@@ -204,7 +238,7 @@ function AIAssistantPage() {
 
               </div>
             </CardContent>
-          </Card>
+          </Card>}
 
           {/* data evidence */}
           <Card className="border-2 border-[#3b82f6]/20">

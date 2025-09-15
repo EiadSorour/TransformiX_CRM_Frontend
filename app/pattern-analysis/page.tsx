@@ -12,6 +12,7 @@ import { Loader2 } from "lucide-react";
 
 function PatternAnalysisPage() {
 
+    const [checkingData, setCheckingData] = useState(true);
     const [dataExists, setDataExists] = useState(false);
     const [haveTransactions, setHaveTransactions] = useState(false);
     const [foundPattern, setFoundPattern] = useState(false);
@@ -34,7 +35,8 @@ function PatternAnalysisPage() {
 
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-table`);
             setDataExists(response.data.status);
-             
+            setCheckingData(false);
+            
             if(response.data.status){
                 setInitialChecking(true);
                 try{
@@ -92,7 +94,7 @@ function PatternAnalysisPage() {
         </div>
       </header>
 
-      {!dataExists && <p className="mt-5 text-center pb-3 text-red-600 font-bold">Please upload your data for analysis.</p>}
+      {(!dataExists && !checkingData) && <p className="mt-5 text-center pb-3 text-red-600 font-bold">Please upload your data for analysis.</p>}
 
         {initialChecking && 
             <div className="container mx-auto px-4 py-8">
@@ -166,7 +168,7 @@ function PatternAnalysisPage() {
                 </div>
                 <Button disabled={isAnalyzing} onClick={onAnalyze} className="cursor-pointer w-full bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 text-white font-medium py-3">
                   <Icon icon="lucide:play" className="w-4 h-4 mr-2" />
-                  Analyze Patterns
+                  {isAnalyzing ? "Analyzing..." : "Analyze Patterns"}
                 </Button>
               </div>
             </CardContent>
