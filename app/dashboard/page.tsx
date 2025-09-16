@@ -14,11 +14,13 @@ import {
 } from "@/components/ui/table";
 import axios from "axios";
 import Markdown from 'react-markdown';
+import { Area, AreaChart, PieChart, BarChart ,Bar, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Rectangle, Cell, Pie, Label } from "recharts";
+import { ChartContainer } from "@/components/ui/chart";
 
 function DashboardPage() {
 
     const [checkingData, setCheckingData] = useState(true);
-    const [dataExists, setDataExists] = useState(false);
+    const [dataExists, setDataExists] = useState(true);
     const [data, setData] = useState({
         keyBusinessInsights: {
             primaryInsights: [""],
@@ -26,8 +28,39 @@ function DashboardPage() {
         },
         keyPerformanceMetrics: [{number: 0, title: "", description: ""}],
         businessRecommendations: { actionableInsights: [""], nextSteps: [""]},
-        analytics: [ {name: "", count: 0, mean: 0, std: 0, min: 0, "25%": 0, "50%": 0, "75%": 0, max: 0}]
+        analytics: [ {name: "", count: 0, mean: 0, std: 0, min: 0, "25%": 0, "50%": 0, "75%": 0, max: 0}],
+        lineChart: false,
+        barChart: false,
+        pieChart: false,
+        donutChart: false,
+        lineChartData: { title: "", data: [{name: "", value: 0}] },
+        barChartData: { title: "", data: [{name: "", value: 0}]},
+        pieChartData: { title: "", colorCodes: [""],  data: [{name: "", value: 0}] },
+        donutChartData: { title: "", colorCodes: [""], data: [{name: "", value: 0}] }
     });
+    const RADIAN = Math.PI / 180;
+
+    interface PieLabelRenderProps {
+      cx: number;
+      cy: number;
+      midAngle: number;
+      innerRadius: number;
+      outerRadius: number;
+      percent: number;
+      value: number;
+    }
+
+    const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }: PieLabelRenderProps) => {
+      const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+      const x = cx + radius * Math.cos(-(midAngle ?? 0) * RADIAN);
+      const y = cy + radius * Math.sin(-(midAngle ?? 0) * RADIAN);
+
+      return (
+        <text x={x} y={y} fill="white" textAnchor={x > cx ? 'start' : 'end'} dominantBaseline="central">
+          {`${((percent ?? 1) * 100).toFixed(0)}%`}
+        </text>
+      );
+    };
 
     useEffect(()=>{
         const checkData = async () => {
@@ -53,16 +86,14 @@ function DashboardPage() {
       <div className="container mx-auto px-6 py-8">
         
         {/* title */}
-        {/* <div className="mb-5">
-          <div className="flex items-center justify-center">
-            <div>
-              <h1 className="text-5xl font-heading font-extrabold text-[#1e3a8a] mb-2">
-                Dashboard
-              </h1>
-            </div>
-          </div>
+        <div className="text-center mb-12">
+          <h2 className="font-heading text-4xl font-bold text-[#1e3a8a] mb-4">
+            Instant Insights, Smarter Decisions
+          </h2>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Transform business data into actionable intelligence with AI. Get real-time analytics, predictive insights, and comprehensive reports through natural language queries for faster, data-driven decisions.            
+          </p>
         </div>
-        <hr className="mb-5"/> */}
 
         {(!dataExists && !checkingData) && <p className="text-center pb-3 text-red-600 font-bold">Please upload your data for analysis.</p>}
 
@@ -75,7 +106,7 @@ function DashboardPage() {
           </Card>
         </div>}
 
-        {!checkingData && <div>
+        {(!checkingData && dataExists) && <div>
           {/* Key Business Insights */}
           <div className="mb-8">
             <h2 className="text-2xl font-heading font-bold text-[#1e3a8a] mb-6">
@@ -192,6 +223,105 @@ function DashboardPage() {
               </Card>
             </div>
           </div>
+          
+
+          {/* Charts  */}
+          {(data.barChart || data.lineChart || data.pieChart || data.donutChart) && <div className="mb-8">
+            <h2 className="text-2xl font-heading font-bold text-[#1e3a8a] mb-6">Charts</h2>
+            <div className="grid grid-cols-2 gap-5">
+
+            {/* pie chart */}
+            {data.pieChart && <div className="flex flex-col border-2 rounded-3xl shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl">
+                <div className="text-center font-bold text-xl text-[#1e3a8a] my-2">{data.pieChartData.title}</div>
+                <ChartContainer config={{}} className="w-full h-[300px]">
+                  <PieChart width={400} height={400}>
+                    <Pie data={data.pieChartData.data} dataKey="value" cx="50%" cy="50%"  fill="#8884d8" labelLine={false} label={renderCustomizedLabel} >
+                      {data.pieChartData.data.map((entry, index) => (
+                        <Cell key={`cell-${entry.name}`} fill={data.pieChartData.colorCodes[index % data.pieChartData.colorCodes.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip/>
+                    <Legend/>
+                  </PieChart>
+                </ChartContainer>
+              </div>}
+              
+              {/* line chart */}
+              {data.lineChart && <div className="flex flex-col border-2 rounded-3xl shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl">
+                <div className="text-center font-bold text-xl text-[#1e3a8a] my-2">{data.lineChartData.title}</div>
+                <ChartContainer config={{}} className="w-full h-[300px]">
+                  <LineChart
+                    width={500}
+                    height={300}
+                    data={data.lineChartData.data}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid  strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    
+                    <Line type="monotone" dataKey="value" stroke="#8884d8" activeDot={{ r: 8 }} />
+                  </LineChart>
+                </ChartContainer>
+              </div>}
+              
+              {/* bar chart */}
+              {data.barChart && <div className="flex flex-col border-2 rounded-3xl shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl">
+                <div className="text-center font-bold text-xl text-[#1e3a8a] my-2">{data.barChartData.title}</div>
+                <ChartContainer config={{}} className="w-full h-[300px]">
+                  <BarChart
+                    width={500}
+                    height={300}
+                    data={data.barChartData.data}
+                    margin={{
+                      top: 5,
+                      right: 30,
+                      left: 20,
+                      bottom: 5,
+                    }}
+                  >
+                    <CartesianGrid strokeDasharray="3 3" />
+                    <XAxis dataKey="name" />
+                    <YAxis />
+                    <Tooltip />
+                    <Legend />
+                    <Bar dataKey="value" fill="#8884d8" activeBar={<Rectangle fill="pink" stroke="blue" />} />
+                  </BarChart>
+                </ChartContainer>
+              </div>}
+              
+              {/* donut chart */}
+              {data.donutChart && <div className="flex flex-col border-2 rounded-3xl shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl">
+                <div className="text-center font-bold text-xl text-[#1e3a8a] my-2">{data.donutChartData.title}</div>
+                <ChartContainer config={{}} className="w-full h-[300px]">
+                  <PieChart>
+                    <Pie
+                      data={data.donutChartData.data}
+                      isAnimationActive={true}
+                      innerRadius={80}
+                      fill="#8884d8"
+                      paddingAngle={5}
+                      dataKey="value"
+                    >
+                      {data.donutChartData.data.map((entry, index) => (
+                        <Cell key={`cell-${entry.name}`} fill={data.donutChartData.colorCodes[index % data.donutChartData.colorCodes.length]} />
+                      ))}
+                    </Pie>
+                    <Tooltip/>
+                    <Legend/>
+                  </PieChart>
+                </ChartContainer>
+              </div>}
+
+            </div>
+          </div>}
 
           
           {/* busniess recommendations */}

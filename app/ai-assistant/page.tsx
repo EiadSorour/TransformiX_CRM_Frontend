@@ -38,6 +38,8 @@ function AIAssistantPage() {
           const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/smart-question-examples`);
           setSmartQuestions(response.data);
         }
+
+        setCheckingData(false);
     }
 
     checkData();
