@@ -29,10 +29,10 @@ function DashboardPage() {
         keyPerformanceMetrics: [{number: 0, title: "", description: ""}],
         businessRecommendations: { actionableInsights: [""], nextSteps: [""]},
         analytics: [ {name: "", count: 0, mean: 0, std: 0, min: 0, "25%": 0, "50%": 0, "75%": 0, max: 0}],
-        lineChart: false,
-        barChart: false,
-        pieChart: false,
-        donutChart: false,
+        lineChart: "false",
+        barChart: "false",
+        pieChart: "false",
+        donutChart: "false",
         lineChartData: { title: "", data: [{name: "", value: 0}] },
         barChartData: { title: "", data: [{name: "", value: 0}]},
         pieChartData: { title: "", colorCodes: [""],  data: [{name: "", value: 0}] },
@@ -227,12 +227,12 @@ function DashboardPage() {
           
 
           {/* Charts  */}
-          {(data.barChart || data.lineChart || data.pieChart || data.donutChart) && <div className="mb-8">
+          {(data.barChart === "true" || data.lineChart === "true" || data.pieChart === "true" || data.donutChart === "true") && <div className="mb-8">
             <h2 className="text-2xl font-heading font-bold text-foreground mb-6">Charts</h2>
             <div className="grid grid-cols-2 gap-5">
 
             {/* pie chart */}
-            {data.pieChart && <div className="flex flex-col border border-border rounded-lg shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl bg-card">
+            {data.pieChart === "true" && <div className="flex flex-col border border-border rounded-lg shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl bg-card">
                 <div className="text-center font-bold text-xl text-foreground my-2">{data.pieChartData.title}</div>
                 <ChartContainer config={{}} className="w-full h-[300px]">
                   <PieChart width={400} height={400}>
@@ -248,7 +248,7 @@ function DashboardPage() {
               </div>}
               
               {/* line chart */}
-              {data.lineChart && <div className="flex flex-col border border-border rounded-lg shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl bg-card">
+              {data.lineChart === "true" && <div className="flex flex-col border border-border rounded-lg shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl bg-card">
                 <div className="text-center font-bold text-xl text-foreground my-2">{data.lineChartData.title}</div>
                 <ChartContainer config={{}} className="w-full h-[300px]">
                   <LineChart
@@ -274,7 +274,7 @@ function DashboardPage() {
               </div>}
               
               {/* bar chart */}
-              {data.barChart && <div className="flex flex-col border border-border rounded-lg shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl bg-card">
+              {data.barChart === "true" && <div className="flex flex-col border border-border rounded-lg shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl bg-card">
                 <div className="text-center font-bold text-xl text-foreground my-2">{data.barChartData.title}</div>
                 <ChartContainer config={{}} className="w-full h-[300px]">
                   <BarChart
@@ -299,7 +299,7 @@ function DashboardPage() {
               </div>}
               
               {/* donut chart */}
-              {data.donutChart && <div className="flex flex-col border border-border rounded-lg shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl bg-card">
+              {data.donutChart === "true" && <div className="flex flex-col border border-border rounded-lg shadow-md hover:-translate-y-1 duration-300 hover:shadow-xl bg-card">
                 <div className="text-center font-bold text-xl text-foreground my-2">{data.donutChartData.title}</div>
                 <ChartContainer config={{}} className="w-full h-[300px]">
                   <PieChart>
