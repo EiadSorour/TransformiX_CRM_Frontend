@@ -48,6 +48,7 @@ body {
 
 :root {
   --radius: 0.625rem;
+  --sidebar-width: 80px; /* Default collapsed width */
   --background: hsl(224 71% 4%);
   --foreground: hsl(210 40% 98%);
   --card: hsl(224 71% 4%);

@@ -24,7 +24,7 @@ export default function RootLayout({
         className={`${inter.variable} antialiased flex`}
       >
         <Sidebar />
-        <main className="flex-1 pl-64 p-4 overflow-y-auto">
+        <main className="flex-1 pl-[var(--sidebar-width)] p-4 overflow-y-auto transition-all duration-300">
           {children}
         </main>
       </body>
