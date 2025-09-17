@@ -36,15 +36,25 @@ function PatternAnalysisPage() {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-table`);
             setDataExists(response.data.status);
             setCheckingData(false);
+
+            const storagePatterns = localStorage.getItem("patterns");
+            const storageInitialData = localStorage.getItem("initial");
+            if((storagePatterns && storageInitialData)){
+              setHaveTransactions(true);
+              setFoundPattern(true);
+              setInitialData(JSON.parse(storageInitialData));
+              setPatterns(JSON.parse(storagePatterns));
+            }
             
-            if(response.data.status){
+            if(response.data.status && (!storagePatterns && !storageInitialData)){
                 setInitialChecking(true);
                 try{
                     const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/pattern-analysis-initial`);
                     setHaveTransactions(response.data.transactionalPatternsDetected);
 
                     if(response.data.transactionalPatternsDetected){
-                        setInitialData(response.data.data)
+                        setInitialData(response.data.data);
+                        localStorage.setItem("initial", JSON.stringify(response.data.data));
                     }
                 }finally{
                     setInitialChecking(false);
@@ -65,6 +75,7 @@ function PatternAnalysisPage() {
             
             if(response.data.foundPatterns){
                 setPatterns(response.data.data);
+                localStorage.setItem("patterns", JSON.stringify(response.data.data));
             }else{
                 setIssueNotFoundPattern(response.data.issueIfNoPatternsFound);
             }
@@ -86,7 +97,13 @@ function PatternAnalysisPage() {
               <div className="flex items-center space-x-3">
                 <div className="text-center">
                   <h1 className="text-2xl font-bold text-foreground mb-2">Universal Pattern Analysis</h1>
-                  <p className="text-sm text-muted-foreground tracking-wider">Pattern Analysis helps identify relationships and associations in your Retail/E-commerce Customer Analytics data. This works with any type of transactional or multi-value data.</p>
+                  <p className="text-sm text-muted-foreground tracking-wider">{`
+                    Unlock strategic insights from your data with Universal Pattern Analysis. 
+                    Designed for decision-makers across industries, this tool identifies meaningful 
+                    patterns and relationships in transactional and multi-dimensional datasets — revealing 
+                    customer behaviors, operational inefficiencies, and growth opportunities. Whether you're 
+                    optimizing pricing, forecasting demand, or personalizing experiences, implementing upselling &
+                    cross-selling Universal Pattern Analysis turns complex data into competitive advantage.`}</p>
                 </div>
               </div>
             </div>
@@ -228,10 +245,10 @@ function PatternAnalysisPage() {
                             </div>
                             <div className="text-right">
                                 <p className="text-sm text-muted-foreground">
-                                Lift: <span className="font-semibold text-primary">{feature.lift}</span>
+                                Confidence: <span className="font-semibold text-primary">{(feature.confidence * 100).toFixed(0)}%</span>
                                 </p>
                                 <p className="text-sm text-muted-foreground">
-                                Confidence: <span className="font-semibold text-primary">{feature.confidence}</span>
+                                Lift: <span className="font-semibold text-primary">{feature.lift}</span>
                                 </p>
                             </div>
                         </div>
