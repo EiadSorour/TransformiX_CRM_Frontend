@@ -248,6 +248,7 @@ export default function Home() {
       setPage(1);
       setLastPage(1);
       setTotalCount(0);
+      localStorage.clear();
     } finally{
       setDeletingData(false);
     }

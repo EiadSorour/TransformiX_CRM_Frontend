@@ -16,6 +16,7 @@ import axios from "axios";
 import Markdown from 'react-markdown';
 import { Area, AreaChart, PieChart, BarChart ,Bar, CartesianGrid, Legend, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis, Rectangle, Cell, Pie, Label } from "recharts";
 import { ChartContainer } from "@/components/ui/chart";
+import { Button } from "@/components/ui/button";
 
 function DashboardPage() {
 
@@ -88,6 +89,11 @@ function DashboardPage() {
         checkData();
     }, [])
 
+    function reCalculateInsights(){
+      localStorage.removeItem("userData");
+      window.location.reload();
+    }
+
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-6 py-8">
@@ -116,36 +122,22 @@ function DashboardPage() {
         {(!checkingData && dataExists) && <div>
           {/* Key Business Insights */}
           <div className="mb-8">
-            <h2 className="text-2xl font-heading font-bold text-foreground mb-6">
+            {
+            /* <h2 className="text-2xl font-heading font-bold text-foreground mb-6">
               Key Business Insights
-            </h2>
-            
-            {/* primary insights */}
-            <div className="mb-6">
-              <h3 className="text-lg font-semibold text-foreground mb-4">Primary Insights</h3>
-              <div className="bg-card rounded-lg border border-border p-6">
-                <ul className="space-y-4">
-                  
-                  {/* insight */}
-                  {data.keyBusinessInsights.primaryInsights.map((feature, index)=>(
-                      <li key={index} className="flex items-start space-x-3">
-                          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
-                              <CircleCheck  className="text-primary-foreground text-sm" />
-                          </div>
-                          <h4 className="font-semibold text-foreground">
-                              {feature}
-                          </h4>
-                      </li>
-                  ))}
+            </h2> */}
 
-                </ul>
-              </div>
-            </div>
-
-              
-          {/* quick stats */}
+            {/* quick stats */}
             <div>
-              <h3 className="text-lg font-semibold text-foreground mb-4">Quick Stats</h3>
+              <div className="flex flex-row w-full">
+                <h2 className="text-2xl font-heading font-bold text-foreground mb-6">Quick Stats</h2>
+                <div className="ml-auto mb-6">
+                  <Button onClick={reCalculateInsights} className="cursor-pointer w-[200px] bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium py-3">
+                    <Icon icon="lucide:refresh-ccw" className="w-4 h-4 mr-2 text-primary-foreground" /> Recalculate Insights
+                  </Button>
+                </div>
+              </div>
+
               <div className="bg-card rounded-lg border border-border p-6">
                 <ul className="space-y-4">
                   
@@ -161,76 +153,9 @@ function DashboardPage() {
                 
                 </ul>
               </div>
-            </div>
-          </div>
-
-
-          <div className="mb-8">
-            <h2 className="text-2xl font-heading font-bold text-foreground mb-6">
-              Key Performance Metrics
-            </h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-              
-              {/* metric */}
-              {data.keyPerformanceMetrics.map((feature,index)=>(
-                  <Card key={index} className="bg-card text-center border-border">
-                      <CardContent className="px-4 justify-items-center">
-                          <div className="flex text-primary items-center mb-4 text-4xl font-bold">
-                              {feature.number}
-                          </div>
-                          <div className="text-2xl font-bold text-foreground mb-1">{feature.title}</div>
-                          <div className="text-sm text-muted-foreground">{feature.description}</div>
-                      </CardContent>
-                  </Card>  
-              ))}  
-            </div>
-          </div>
-
-          <div className="mb-8">
-            <h2 className="text-2xl font-heading font-bold text-foreground mb-6">
-              Analytics
-            </h2>
-            <div className="grid grid-cols-1 gap-6">
-              <Card className="bg-card border-border">
-                <CardHeader>
-                  <CardTitle className="text-foreground">Numeric Summary Statistics</CardTitle>
-                </CardHeader>
-                <CardContent className="px-6 pl-0">
-                  <Table>
-                    <TableHeader>
-                      <TableRow className="bg-muted/80">
-                        <TableHead className="w-[100px] text-muted-foreground"></TableHead>
-                        <TableHead className="text-muted-foreground">Count</TableHead>
-                        <TableHead className="text-muted-foreground">Mean</TableHead>
-                        <TableHead className="text-muted-foreground">Std</TableHead>
-                        <TableHead className="text-muted-foreground">Min</TableHead>
-                        <TableHead className="text-muted-foreground">25%</TableHead>
-                        <TableHead className="text-muted-foreground">50%</TableHead>
-                        <TableHead className="text-muted-foreground">75%</TableHead>
-                        <TableHead className="text-right text-muted-foreground">Max</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      {data.analytics.map((feature,index) => (
-                        <TableRow key={feature.name} className="hover:bg-muted/20">
-                          <TableCell className="font-medium text-foreground">{feature.name}</TableCell>
-                          <TableCell className="text-foreground">{feature.count}</TableCell>
-                          <TableCell className="text-foreground">{feature.mean}</TableCell>
-                          <TableCell className="text-foreground">{feature.std}</TableCell>
-                          <TableCell className="text-foreground">{feature.min}</TableCell>
-                          <TableCell className="text-foreground">{feature["25%"]}</TableCell>
-                          <TableCell className="text-foreground">{feature["50%"]}</TableCell>
-                          <TableCell className="text-foreground">{feature["75%"]}</TableCell>
-                          <TableCell className="text-right text-foreground">{feature.max}</TableCell>
-                        </TableRow>
-                      ))}
-                    </TableBody>
-                  </Table>
-                </CardContent>
-              </Card>
-            </div>
-          </div>
+            </div>  
           
+          </div>
 
           {/* Charts  */}
           {(data.barChart === "true" || data.lineChart === "true" || data.pieChart === "true" || data.donutChart === "true") && <div className="mb-8">
@@ -329,6 +254,98 @@ function DashboardPage() {
 
             </div>
           </div>}
+
+          
+          {/* Key Performance metrics */}
+          <div className="mb-8">
+            <h2 className="text-2xl font-heading font-bold text-foreground mb-6">
+              Key Performance Metrics
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
+              
+              {/* metric */}
+              {data.keyPerformanceMetrics.map((feature,index)=>(
+                  <Card key={index} className="bg-card text-center border-border">
+                      <CardContent className="px-4 justify-items-center">
+                          <div className="flex text-primary items-center mb-4 text-4xl font-bold">
+                              {feature.number}
+                          </div>
+                          <div className="text-2xl font-bold text-foreground mb-1">{feature.title}</div>
+                          <div className="text-sm text-muted-foreground">{feature.description}</div>
+                      </CardContent>
+                  </Card>  
+              ))}  
+            </div>
+          </div>
+          
+
+          {/* Analytics Table */}
+          {/* <div className="mb-8">
+            <h2 className="text-2xl font-heading font-bold text-foreground mb-6">
+              Analytics
+            </h2>
+            <div className="grid grid-cols-1 gap-6">
+              <Card className="bg-card border-border">
+                <CardHeader>
+                  <CardTitle className="text-foreground">Numeric Summary Statistics</CardTitle>
+                </CardHeader>
+                <CardContent className="px-6 pl-0">
+                  <Table>
+                    <TableHeader>
+                      <TableRow className="bg-muted/80">
+                        <TableHead className="w-[100px] text-muted-foreground"></TableHead>
+                        <TableHead className="text-muted-foreground">Count</TableHead>
+                        <TableHead className="text-muted-foreground">Mean</TableHead>
+                        <TableHead className="text-muted-foreground">Std</TableHead>
+                        <TableHead className="text-muted-foreground">Min</TableHead>
+                        <TableHead className="text-muted-foreground">25%</TableHead>
+                        <TableHead className="text-muted-foreground">50%</TableHead>
+                        <TableHead className="text-muted-foreground">75%</TableHead>
+                        <TableHead className="text-right text-muted-foreground">Max</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {data.analytics.map((feature,index) => (
+                        <TableRow key={feature.name} className="hover:bg-muted/20">
+                          <TableCell className="font-medium text-foreground">{feature.name}</TableCell>
+                          <TableCell className="text-foreground">{feature.count}</TableCell>
+                          <TableCell className="text-foreground">{feature.mean}</TableCell>
+                          <TableCell className="text-foreground">{feature.std}</TableCell>
+                          <TableCell className="text-foreground">{feature.min}</TableCell>
+                          <TableCell className="text-foreground">{feature["25%"]}</TableCell>
+                          <TableCell className="text-foreground">{feature["50%"]}</TableCell>
+                          <TableCell className="text-foreground">{feature["75%"]}</TableCell>
+                          <TableCell className="text-right text-foreground">{feature.max}</TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                </CardContent>
+              </Card>
+            </div>
+          </div> */}
+
+          {/* primary insights */}
+          <div className="mb-6">
+              <h2 className="text-2xl font-heading font-bold text-foreground mb-6">Primary Insights</h2>
+              <div className="bg-card rounded-lg border border-border p-6">
+                <ul className="space-y-4">
+                  
+                  {/* insight */}
+                  {data.keyBusinessInsights.primaryInsights.map((feature, index)=>(
+                      <li key={index} className="flex items-start space-x-3">
+                          <div className="w-6 h-6 bg-primary rounded-full flex items-center justify-center flex-shrink-0">
+                              <CircleCheck  className="text-primary-foreground text-sm" />
+                          </div>
+                          <h4 className="font-semibold text-foreground">
+                              {feature}
+                          </h4>
+                      </li>
+                  ))}
+
+                </ul>
+              </div>
+            </div>
 
           
           {/* busniess recommendations */}

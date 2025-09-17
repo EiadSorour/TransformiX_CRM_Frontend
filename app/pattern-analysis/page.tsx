@@ -39,10 +39,14 @@ function PatternAnalysisPage() {
 
             const storagePatterns = localStorage.getItem("patterns");
             const storageInitialData = localStorage.getItem("initial");
-            if((storagePatterns && storageInitialData)){
+            
+            if(storageInitialData){
               setHaveTransactions(true);
-              setFoundPattern(true);
               setInitialData(JSON.parse(storageInitialData));
+            }
+            
+            if(storagePatterns){
+              setFoundPattern(true);
               setPatterns(JSON.parse(storagePatterns));
             }
             
@@ -69,6 +73,7 @@ function PatternAnalysisPage() {
 
     async function onAnalyze(){
         setIsAnalyzing(true);
+        localStorage.removeItem("patterns");
         try{
             const response = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/pattern-analysis-analyze`, {minSupport: minSupport});
             setFoundPattern(response.data.foundPatterns);
