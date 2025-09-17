@@ -69,9 +69,15 @@ function DashboardPage() {
             const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/check-table`);
             setDataExists(response.data.status);
 
-            if(response.data.status){
+            const storageData = localStorage.getItem("userData");
+            if(storageData){
+              setData(JSON.parse(storageData));
+            }
+
+            if(response.data.status && !storageData){
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_BACKEND_URL}/dashboard-data`);
                 setData(response.data);
+                localStorage.setItem("userData", JSON.stringify(response.data));
                 console.log(response.data);
             }
           }finally{
