@@ -69,7 +69,7 @@ function AIAssistantPage() {
         
         {/* title */}
         <div className="text-center mb-12">
-          <h2 className="font-heading text-4xl font-bold text-[#1e3a8a] mb-4">
+          <h2 className="font-heading text-4xl font-bold text-foreground mb-4">
             Welcome to Your AI Business Assistant
           </h2>
           <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
@@ -80,13 +80,13 @@ function AIAssistantPage() {
 
         {/* sample questions */}
         { dataExists && 
-          <Card className="mb-8">
+          <Card className="mb-8 bg-card border-border">
             <CardContent className="px-6 py-8">
               <div className="flex items-center mb-6">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#0891b2] to-[#06b6d4] rounded-lg flex items-center justify-center mr-3">
-                  <Icon icon="ph:lightbulb-bold" className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                  <Icon icon="ph:lightbulb-bold" className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <h3 className="text-xl font-semibold text-[#1e3a8a]">Smart Question Examples</h3>
+                <h3 className="text-xl font-semibold text-foreground">Smart Question Examples</h3>
               </div>
 
               
@@ -96,9 +96,9 @@ function AIAssistantPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
                 {smartQuestions.map((question, index) => (
-                  <div key={index} onClick={()=>setQuestion(question.question)} className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
+                  <div key={index} onClick={()=>setQuestion(question.question)} className="h-auto p-4 text-left justify-start border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
                     <div>
-                      <div className="font-medium text-[#1e3a8a] mb-1">{question.title}</div>
+                      <div className="font-medium text-foreground mb-1">{question.title}</div>
                       <div className="text-sm text-muted-foreground">
                         {question.question}
                       </div>
@@ -109,23 +109,23 @@ function AIAssistantPage() {
               
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
-                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                      <Skeleton count={3}/>
+                <div className="h-auto p-4 text-left justify-start border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Skeleton count={3} baseColor="hsl(215 28% 17%)" highlightColor="hsl(224 71% 4%)"/>
                 </div>
-                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                      <Skeleton count={3}/>
+                <div className="h-auto p-4 text-left justify-start border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Skeleton count={3} baseColor="hsl(215 28% 17%)" highlightColor="hsl(224 71% 4%)"/>
                 </div>
-                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                      <Skeleton count={3}/>
+                <div className="h-auto p-4 text-left justify-start border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Skeleton count={3} baseColor="hsl(215 28% 17%)" highlightColor="hsl(224 71% 4%)"/>
                 </div>
-                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                      <Skeleton count={3}/>
+                <div className="h-auto p-4 text-left justify-start border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Skeleton count={3} baseColor="hsl(215 28% 17%)" highlightColor="hsl(224 71% 4%)"/>
                 </div>
-                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                      <Skeleton count={3}/>
+                <div className="h-auto p-4 text-left justify-start border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Skeleton count={3} baseColor="hsl(215 28% 17%)" highlightColor="hsl(224 71% 4%)"/>
                 </div>
-                <div className="h-auto p-4 text-left justify-start border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50 transition-colors">
-                      <Skeleton count={3}/>
+                <div className="h-auto p-4 text-left justify-start border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors">
+                      <Skeleton count={3} baseColor="hsl(215 28% 17%)" highlightColor="hsl(224 71% 4%)"/>
                 </div>
               </div>
             }
@@ -135,30 +135,30 @@ function AIAssistantPage() {
           </Card>}
 
         {/* ask ai */}
-        {(!dataExists && !checkingData) && <p className="text-center pb-3 text-red-600 font-bold">Please upload your data for analysis.</p>}
-        <Card className="mb-8">
+        {(!dataExists && !checkingData) && <p className="text-center pb-3 text-destructive font-bold">Please upload your data for analysis.</p>}
+        <Card className="mb-8 bg-card border-border">
           <CardContent className="px-6 py-6">
             <div className="flex items-center mb-4">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#1e3a8a] to-[#3b82f6] rounded-lg flex items-center justify-center mr-3">
-                <Icon icon="ph:chat-circle-bold" className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                <Icon icon="ph:chat-circle-bold" className="w-5 h-5 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-semibold text-[#1e3a8a]">Ask Your Question</h3>
+              <h3 className="text-xl font-semibold text-foreground">Ask Your Question</h3>
             </div>
             <div className="flex gap-4 items-center">
               <Input
                 disabled={!dataExists || isAnalysing}
                 onChange={onQuestionChange}
                 value={question}
-                className="flex-1 h-12 text-base border-2 focus:border-[#0891b2] transition-colors"
+                className="flex-1 h-12 text-base border-2 focus:border-primary transition-colors bg-input"
                 placeholder="Type your business intelligence question here..."
               />
               <Button
                 onClick={askQuestion}
                 disabled={!dataExists || isAnalysing}
                 size="lg"
-                className="bg-gradient-to-r from-[#1e3a8a] to-[#0891b2] hover:from-[#1e40af] hover:to-[#0891b2] px-8"
+                className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 px-8"
               >
-                <Icon icon="ph:paper-plane-right-bold" className="w-5 h-5 mr-2" />
+                <Icon icon="ph:paper-plane-right-bold" className="w-5 h-5 mr-2 text-primary-foreground" />
                 {isAnalysing ? "Analyzing..." : "Analyze"}
               </Button>
             </div>
@@ -172,13 +172,13 @@ function AIAssistantPage() {
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
           
           {/* smart analysis */}
-          <Card className="border-2 border-[#0891b2]/20">
+          <Card className="border-2 border-border bg-card">
             <CardContent className="px-6 py-6">
               <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#0891b2] to-[#06b6d4] rounded-lg flex items-center justify-center mr-3">
-                  <Icon icon="ph:brain-bold" className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                  <Icon icon="ph:brain-bold" className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold text-[#1e3a8a]">Smart Analysis</h3>
+                <h3 className="text-lg font-semibold text-foreground">Smart Analysis</h3>
               </div>
               <div className="space-y-4">
                 <div className="p-4 bg-muted/50 rounded-lg">
@@ -187,7 +187,7 @@ function AIAssistantPage() {
                     {analysis.smartAnalysis.analysis}
                   </Markdown>
                 </div>
-                <div className="flex items-center text-sm text-[#0891b2]">
+                <div className="flex items-center text-sm text-primary">
                   <Icon icon="ph:check-circle-bold" className="w-4 h-4 mr-2" />
                   {`Analysis completed with ${analysis.smartAnalysis.confidence * 100}% confidence`}
                 </div>
@@ -196,21 +196,21 @@ function AIAssistantPage() {
           </Card>
 
           {/* key findings  */}
-          <Card className="border-2 border-[#1e3a8a]/20">
+          <Card className="border-2 border-border bg-card">
             <CardContent className="px-6 py-6">
               <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#1e3a8a] to-[#3b82f6] rounded-lg flex items-center justify-center mr-3">
-                  <Icon icon="ph:star-bold" className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                  <Icon icon="ph:star-bold" className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold text-[#1e3a8a]">Key Findings</h3>
+                <h3 className="text-lg font-semibold text-foreground">Key Findings</h3>
               </div>
               <div className="space-y-3">
                 
                 {/* finding */}
                 {analysis.keyFindings.map((finding, index)=>(
                   <div key={index} className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-[#0891b2] rounded-full mt-2" />
-                    <p className="text-sm">
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2" />
+                    <p className="text-sm text-foreground">
                       {finding}
                     </p>
                   </div>
@@ -221,19 +221,19 @@ function AIAssistantPage() {
           </Card>
 
           {/* relevant statistics */}
-          {analysis.relevantStatistics.length > 0 && <Card className="border-2 border-[#06b6d4]/20">
+          {analysis.relevantStatistics.length > 0 && <Card className="border-2 border-border bg-card">
             <CardContent className="px-6 py-6">
               <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#06b6d4] to-[#0891b2] rounded-lg flex items-center justify-center mr-3">
-                  <Icon icon="ph:chart-line-up-bold" className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                  <Icon icon="ph:chart-line-up-bold" className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold text-[#1e3a8a]">Relevant Statistics</h3>
+                <h3 className="text-lg font-semibold text-foreground">Relevant Statistics</h3>
               </div>
               <div className="space-y-3">
                 
                 {analysis.relevantStatistics.map((feature,index)=>(
-                  <div key={index} className="justify-between items-start py-2 border-b border-muted/30">
-                    <div className="text-lg font-bold text-[#1e3a8a]">{feature.key}</div>
+                  <div key={index} className="justify-between items-start py-2 border-b border-border">
+                    <div className="text-lg font-bold text-primary">{feature.key}</div>
                     <div className="text-sm text-muted-foreground">{feature.value}</div>
                   </div>
                 ))}
@@ -243,30 +243,30 @@ function AIAssistantPage() {
           </Card>}
 
           {/* data evidence */}
-          <Card className="border-2 border-[#3b82f6]/20">
+          <Card className="border-2 border-border bg-card">
             <CardContent className="px-6 py-6">
               <div className="flex items-center mb-4">
-                <div className="w-8 h-8 bg-gradient-to-br from-[#3b82f6] to-[#1e3a8a] rounded-lg flex items-center justify-center mr-3">
-                  <Icon icon="ph:database-bold" className="w-5 h-5 text-white" />
+                <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                  <Icon icon="ph:database-bold" className="w-5 h-5 text-primary-foreground" />
                 </div>
-                <h3 className="text-lg font-semibold text-[#1e3a8a]">Data Evidence</h3>
+                <h3 className="text-lg font-semibold text-foreground">Data Evidence</h3>
               </div>
               <div className="space-y-3">
                 
                 {analysis.dataEvidence.evidences.map((feature,index)=>(
                   <div key={index} className="flex items-start space-x-3">
-                    <div className="w-2 h-2 bg-[#0891b2] rounded-full mt-2" />
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2" />
                     <div className="flex-1">
-                      <span className="text-sm">{feature}</span>
+                      <span className="text-sm text-foreground">{feature}</span>
                     </div>
                   </div>
                 ))}
 
                 <div className="flex items-start space-x-3">
                   <div className="flex-1">
-                    <span className="text-sm font-bold">Confidence Level: </span>
+                    <span className="text-sm font-bold text-foreground">Confidence Level: </span>
                     <span 
-                      className={`ml-2 text-sm font-medium ${analysis.dataEvidence.confidence === "high" ? "text-green-600" : analysis.dataEvidence.confidence === "low" ? "text-red-600" : "text-yellow-600"}`}
+                      className={`ml-2 text-sm font-medium ${analysis.dataEvidence.confidence === "high" ? "text-primary" : analysis.dataEvidence.confidence === "low" ? "text-destructive" : "text-secondary"}`}
                     >{analysis.dataEvidence.confidence}</span>
                   </div>
                 </div>
@@ -277,22 +277,22 @@ function AIAssistantPage() {
         </div>
 
         {/* actional insights */}
-        <Card className="mb-8 border-2 border-[#0891b2]/30">
+        <Card className="mb-8 border-2 border-border bg-card">
           <CardContent className="px-6 py-6">
             <div className="flex items-center mb-6">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#0891b2] to-[#06b6d4] rounded-lg flex items-center justify-center mr-3">
-                <Icon icon="ph:target-bold" className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                <Icon icon="ph:target-bold" className="w-5 h-5 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-semibold text-[#1e3a8a]">Actionable Insights</h3>
+              <h3 className="text-xl font-semibold text-foreground">Actionable Insights</h3>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
               {/* insight   */}
               {analysis.actionableInsights.map((feature,index)=>(
-                <div key={index} className="p-4 bg-gradient-to-br from-[#1e3a8a]/5 to-[#0891b2]/5 rounded-lg border border-[#0891b2]/20">
+                <div key={index} className="p-4 bg-muted/50 rounded-lg border border-border">
                   <div className="flex items-center mb-3">
-                    <Icon icon="ph:trend-up-bold" className="w-5 h-5 text-[#0891b2] mr-2" />
-                    <span className="font-medium text-[#1e3a8a]">{feature.title}</span>
+                    <Icon icon="ph:trend-up-bold" className="w-5 h-5 text-primary mr-2" />
+                    <span className="font-medium text-foreground">{feature.title}</span>
                   </div>
                   <p className="text-sm text-muted-foreground">{feature.value}</p>
                 </div>
@@ -303,21 +303,21 @@ function AIAssistantPage() {
         </Card>
 
         {/* follow up questions */}
-        <Card>
+        <Card className="bg-card border-border">
           <CardContent className="px-6 py-6">
             <div className="flex items-center mb-6">
-              <div className="w-8 h-8 bg-gradient-to-br from-[#3b82f6] to-[#1e3a8a] rounded-lg flex items-center justify-center mr-3">
-                <Icon icon="ph:chat-circle-dots-bold" className="w-5 h-5 text-white" />
+              <div className="w-8 h-8 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center mr-3">
+                <Icon icon="ph:chat-circle-dots-bold" className="w-5 h-5 text-primary-foreground" />
               </div>
-              <h3 className="text-xl font-semibold text-[#1e3a8a]">Follow-up Questions</h3>
+              <h3 className="text-xl font-semibold text-foreground">Follow-up Questions</h3>
             </div>
             <div className="flex flex-wrap gap-3">
               
               {/* question */}
               {analysis.followUpQuestions.map((feature,index)=>(
-                <div key={index} onClick={()=>setQuestion(feature)} className="p-2 px-4 border-2 border-gray-200 rounded-lg cursor-pointer hover:bg-gray-100 transition-colors flex items-center space-x-2">
-                  <Icon icon="ph:arrow-right-bold" className="w-4 h-4 text-[#1e3a8a]" />
-                  <div className="text-sm font-medium">{feature}</div>
+                <div key={index} onClick={()=>setQuestion(feature)} className="p-2 px-4 border-2 border-border rounded-lg cursor-pointer hover:bg-muted/50 transition-colors flex items-center space-x-2">
+                  <Icon icon="ph:arrow-right-bold" className="w-4 h-4 text-primary" />
+                  <div className="text-sm font-medium text-foreground">{feature}</div>
                 </div>
               ))}
               

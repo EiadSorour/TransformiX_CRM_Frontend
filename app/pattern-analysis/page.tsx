@@ -78,15 +78,15 @@ function PatternAnalysisPage() {
     }
 
   return (
-    <div className="min-h-screen">
-      <header className="border-b bg-white/80 backdrop-blur-sm">
+    <div className="min-h-screen bg-background text-foreground">
+      <header className="border-b border-border bg-card/80 backdrop-blur-sm">
         <div className="container mx-auto px-4 py-6">
           <div className="flex items-center justify-center">
             <div className="flex items-center space-x-4">
               <div className="flex items-center space-x-3">
                 <div className="text-center">
-                  <h1 className="text-2xl font-bold text-slate-800 mb-2">Universal Pattern Analysis</h1>
-                  <p className="text-sm text-slate-600 tracking-wider">Pattern Analysis helps identify relationships and associations in your Retail/E-commerce Customer Analytics data. This works with any type of transactional or multi-value data.</p>
+                  <h1 className="text-2xl font-bold text-foreground mb-2">Universal Pattern Analysis</h1>
+                  <p className="text-sm text-muted-foreground tracking-wider">Pattern Analysis helps identify relationships and associations in your Retail/E-commerce Customer Analytics data. This works with any type of transactional or multi-value data.</p>
                 </div>
               </div>
             </div>
@@ -94,13 +94,13 @@ function PatternAnalysisPage() {
         </div>
       </header>
 
-      {(!dataExists && !checkingData) && <p className="mt-5 text-center pb-3 text-red-600 font-bold">Please upload your data for analysis.</p>}
+      {(!dataExists && !checkingData) && <p className="mt-5 text-center pb-3 text-destructive font-bold">Please upload your data for analysis.</p>}
 
         {initialChecking && 
             <div className="container mx-auto px-4 py-8">
-              <Card className="bg-white border-blue-200 text-blue-700">
+              <Card className="bg-card border-border text-primary-foreground">
                 <CardContent className="flex items-center justify-center space-x-4 p-6">
-                  <Loader2 className="w-8 h-8 text-blue-500 animate-spin" />
+                  <Loader2 className="w-8 h-8 text-primary animate-spin" />
                   <p className="text-lg font-medium">Checking for transactional patterns...</p>
                 </CardContent>
               </Card>
@@ -109,19 +109,19 @@ function PatternAnalysisPage() {
          
          {(!haveTransactions && dataExists && !initialChecking) && <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 gap-6 mb-8">
-            <Card className="bg-orange-50 border-orange-200 text-orange-700">
+            <Card className="bg-destructive/10 border-destructive text-destructive-foreground">
               <CardContent className="flex items-center space-x-4 p-4">
-                <AlertTriangle className="w-6 h-6 text-orange-500 flex-shrink-0" />
-                <p className="font-medium">
+                <AlertTriangle className="w-6 h-6 text-destructive flex-shrink-0" />
+                <p className="font-medium text-foreground">
                   No suitable transactional patterns detected in this dataset.
                 </p>
               </CardContent>
             </Card>
           </div>
           <div className="grid grid-cols-1 gap-6 mb-8">
-            <Card className="bg-blue-50 border-blue-200 text-blue-700">
+            <Card className="bg-card border-border text-foreground">
               <CardContent className="flex items-start space-x-4 p-4">
-                <Info className="w-6 h-6 text-blue-500 flex-shrink-0" />
+                <Info className="w-6 h-6 text-primary flex-shrink-0" />
                 <div>
                   <p className="font-medium mb-2">Pattern Analysis works best with data that has:</p>
                   <ul className="list-disc list-inside space-y-1 text-sm">
@@ -144,51 +144,51 @@ function PatternAnalysisPage() {
 
       {(dataExists && haveTransactions)  && <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-          <Card className="lg:col-span-2">
+          <Card className="lg:col-span-2 bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Icon icon="lucide:settings" className="w-5 h-5 text-cyan-500" />
+                <Icon icon="lucide:settings" className="w-5 h-5 text-primary" />
                 <span>Analysis Configuration</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="px-6">
               <div className="space-y-6">
                 <div>
-                  <Label className="text-sm font-medium text-slate-700 mb-3 block">
+                  <Label className="text-sm font-medium text-foreground mb-3 block">
                     Minimum Support Value
                   </Label>
                   <div className="space-y-3">
                     <Slider onValueChange={onSliderChange} max={0.5} min={0.1} step={0.05} className="w-full" value={[minSupport]} />
-                    <div className="flex justify-between text-xs text-slate-500">
+                    <div className="flex justify-between text-xs text-muted-foreground">
                       <span>0.1</span>
-                      <span className="font-medium text-cyan-600">{minSupport.toFixed(2)} ({(minSupport * 100).toFixed(0)}%)</span>
+                      <span className="font-medium text-primary">{minSupport.toFixed(2)} ({(minSupport * 100).toFixed(0)}%)</span>
                       <span>0.5</span>
                     </div>
                   </div>
                 </div>
-                <Button disabled={isAnalyzing} onClick={onAnalyze} className="cursor-pointer w-full bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 text-white font-medium py-3">
-                  <Icon icon="lucide:play" className="w-4 h-4 mr-2" />
+                <Button disabled={isAnalyzing} onClick={onAnalyze} className="cursor-pointer w-full bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground font-medium py-3">
+                  <Icon icon="lucide:play" className="w-4 h-4 mr-2 text-primary-foreground" />
                   {isAnalyzing ? "Analyzing..." : "Analyze Patterns"}
                 </Button>
               </div>
             </CardContent>
           </Card>
-          <Card>
+          <Card className="bg-card border-border">
             <CardHeader>
               <CardTitle className="flex items-center space-x-2">
-                <Icon icon="lucide:bar-chart-3" className="w-5 h-5 text-teal-500" />
+                <Icon icon="lucide:bar-chart-3" className="w-5 h-5 text-primary" />
                 <span>Dataset Metrics</span>
               </CardTitle>
             </CardHeader>
             <CardContent className="px-6">
               <div className="space-y-4">
-                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-                  <span className="text-sm font-medium text-slate-700">Transactions Found</span>
-                  <span className="text-lg font-bold text-slate-800">{initialData.transactionsFound}</span>
+                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg border border-border">
+                  <span className="text-sm font-medium text-foreground">Transactions Found</span>
+                  <span className="text-lg font-bold text-foreground">{initialData.transactionsFound}</span>
                 </div>
-                <div className="flex justify-between items-center p-3 bg-slate-50 rounded-lg">
-                  <span className="text-sm font-medium text-slate-700">Avg Items/Transaction</span>
-                  <span className="text-lg font-bold text-slate-800">{initialData.avgItemsPerTransaction}</span>
+                <div className="flex justify-between items-center p-3 bg-muted/50 rounded-lg border border-border">
+                  <span className="text-sm font-medium text-foreground">Avg Items/Transaction</span>
+                  <span className="text-lg font-bold text-foreground">{initialData.avgItemsPerTransaction}</span>
                 </div>
               </div>
             </CardContent>
@@ -197,10 +197,10 @@ function PatternAnalysisPage() {
 
         {(!foundPattern && issueNotFoundPattern.length>0)  && 
             <div className="grid grid-cols-1 gap-6 mb-8">
-            <Card className="bg-orange-50 border-orange-200 text-orange-700">
+            <Card className="bg-destructive/10 border-destructive text-destructive-foreground">
               <CardContent className="flex items-center space-x-4 p-4">
-                <AlertTriangle className="w-6 h-6 text-orange-500 flex-shrink-0" />
-                <p className="font-medium">
+                <AlertTriangle className="w-6 h-6 text-destructive flex-shrink-0" />
+                <p className="font-medium text-foreground">
                   {issueNotFoundPattern}
                 </p>
               </CardContent>
@@ -210,10 +210,10 @@ function PatternAnalysisPage() {
         
         {foundPattern && <div>
             <div className="grid grid-cols-1 gap-6 mb-8">
-            <Card>
+            <Card className="bg-card border-border">
                 <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                    <Icon icon="lucide:trophy" className="w-5 h-5 text-amber-500" />
+                    <Icon icon="lucide:trophy" className="w-5 h-5 text-secondary" />
                     <span>Top Association Patterns</span>
                 </CardTitle>
                 </CardHeader>
@@ -222,16 +222,16 @@ function PatternAnalysisPage() {
                     
                     {/* pattern */}
                     {patterns.topAssociationPatterns.map((feature,index)=>(
-                        <div key={index} className="flex items-center justify-between p-4 bg-gradient-to-r from-cyan-50 to-teal-50 rounded-lg border border-cyan-100">
+                        <div key={index} className="flex items-center justify-between p-4 bg-muted/50 rounded-lg border border-border">
                             <div>
-                                <p className="font-medium text-slate-800">{feature.whenWeSee} → {feature.weOftenFind}</p>
+                                <p className="font-medium text-foreground">{feature.whenWeSee} → {feature.weOftenFind}</p>
                             </div>
                             <div className="text-right">
-                                <p className="text-sm text-slate-600">
-                                Lift: <span className="font-semibold text-cyan-600">{feature.lift}</span>
+                                <p className="text-sm text-muted-foreground">
+                                Lift: <span className="font-semibold text-primary">{feature.lift}</span>
                                 </p>
-                                <p className="text-sm text-slate-600">
-                                Confidence: <span className="font-semibold text-teal-600">{feature.confidence}</span>
+                                <p className="text-sm text-muted-foreground">
+                                Confidence: <span className="font-semibold text-primary">{feature.confidence}</span>
                                 </p>
                             </div>
                         </div>
@@ -241,39 +241,39 @@ function PatternAnalysisPage() {
                 </CardContent>
             </Card>
             </div>
-            <Card>
+            <Card className="bg-card border-border">
             <CardHeader>
                 <CardTitle className="flex items-center space-x-2">
-                <Icon icon="lucide:lightbulb" className="w-5 h-5 text-yellow-500" />
+                <Icon icon="lucide:lightbulb" className="w-5 h-5 text-accent" />
                 <span>Business Insights</span>
                 </CardTitle>
             </CardHeader>
             <CardContent className="px-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center space-x-2">
-                    <Icon icon="lucide:search" className="w-4 h-4 text-cyan-500" />
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center space-x-2">
+                    <Icon icon="lucide:search" className="w-4 h-4 text-primary" />
                     <span>Key Findings</span>
                     </h3>
                     <div className="space-y-3">
                     
                     {patterns.businessInsights.keyFindings.map((feature,index)=>(
-                        <div key={index} className="p-4 bg-teal-50 rounded-lg border-l-4 border-teal-400">
-                            <p className="text-sm text-slate-700">{feature}</p>
+                        <div key={index} className="p-4 bg-muted/50 rounded-lg border-l-4 border-primary">
+                            <p className="text-sm text-foreground">{feature}</p>
                         </div>
                     ))}
 
                     </div>
                 </div>
                 <div>
-                    <h3 className="text-lg font-semibold text-slate-800 mb-4 flex items-center space-x-2">
-                    <Icon icon="lucide:target" className="w-4 h-4 text-teal-500" />
+                    <h3 className="text-lg font-semibold text-foreground mb-4 flex items-center space-x-2">
+                    <Icon icon="lucide:target" className="w-4 h-4 text-primary" />
                     <span>Recommendations</span>
                     </h3>
                     <div className="space-y-3">
                     {patterns.businessInsights.recommendations.map((feature,index)=>(
-                        <div key={index} className="p-4 bg-blue-50 rounded-lg border-l-4 border-blue-400">
-                            <p className="text-sm text-slate-700">{feature}</p>
+                        <div key={index} className="p-4 bg-muted/50 rounded-lg border-l-4 border-secondary">
+                            <p className="text-sm text-foreground">{feature}</p>
                         </div>
                     ))}
                     </div>

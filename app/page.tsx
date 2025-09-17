@@ -261,20 +261,20 @@ export default function Home() {
 
 
   return (
-    <div className="min-h-screen from-slate-50 to-slate-100 p-6">
+    <div className="min-h-screen bg-background text-foreground p-6">
       <div className="mx-auto max-w-7xl space-y-8"> 
         
         {/* header */}
         <div className="flex items-center justify-between">
           <div>
-            <h1 className="font-heading text-4xl font-bold text-slate-800">Display Page</h1>
-            <p className="text-lg text-slate-600 mt-2">
+            <h1 className="font-heading text-4xl font-bold text-foreground">Display Page</h1>
+            <p className="text-lg text-muted-foreground mt-2">
               Upload and explore your CSV data with powerful analytics
             </p>
           </div>
           <div className="flex items-center space-x-3">
             <div className="rounded-lg flex items-center justify-center">
-              <Button disabled={deletingData || isUploading || isChecking} onClick={deleteData} className="bg-red-500 hover:bg-red-700">
+              <Button disabled={deletingData || isUploading || isChecking} onClick={deleteData} className="bg-destructive hover:bg-destructive/90">
                 {deletingData ? "Deleting..." : "Delete Data"}
               </Button>
             </div>
@@ -283,15 +283,15 @@ export default function Home() {
 
         {/* isChecking */}
         {isChecking && (
-          <Card className="border-2 border-dashed border-slate-300 bg-white/50 backdrop-blur-sm">
+          <Card className="border-2 border-dashed border-border bg-card/50 backdrop-blur-sm">
             <CardContent className="px-6 py-12 text-center">
               <div className="flex flex-col items-center space-y-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-blue-400 to-indigo-500 rounded-full flex items-center justify-center">
-                  <Icon icon="material-symbols:sync" className="w-10 h-10 text-white animate-spin" />
+                <div className="w-20 h-20 bg-gradient-to-br from-primary to-secondary rounded-full flex items-center justify-center">
+                  <Icon icon="material-symbols:sync" className="w-10 h-10 text-primary-foreground animate-spin" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Checking data status...</h3>
-                  <p className="text-slate-600 mb-4">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Checking data status...</h3>
+                  <p className="text-muted-foreground mb-4">
                     Please wait while we check for existing data
                   </p>
                 </div>
@@ -302,15 +302,15 @@ export default function Home() {
 
         {/* isUploading  */}
         {(isUploading && !dataExists) && (
-          <Card className="border-2 border-dashed border-teal-400 bg-teal-50/50 backdrop-blur-sm">
+          <Card className="border-2 border-dashed border-primary bg-card/50 backdrop-blur-sm">
             <CardContent className="px-6 py-12 text-center">
               <div className="flex flex-col items-center space-y-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-teal-400 to-cyan-500 rounded-full flex items-center justify-center">
-                  <Icon icon="material-symbols:cloud-upload" className="w-10 h-10 text-white animate-bounce" />
+                <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                  <Icon icon="material-symbols:cloud-upload" className="w-10 h-10 text-primary-foreground animate-bounce" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Uploading your CSV...</h3>
-                  <p className="text-slate-600 mb-4">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Uploading your CSV...</h3>
+                  <p className="text-muted-foreground mb-4">
                     Please wait while your file is being processed
                   </p>
                 </div>
@@ -321,15 +321,15 @@ export default function Home() {
 
         {/* data exists */}
         {(dataExists && !isChecking) && (
-          <Card className="border-2 border-dashed border-green-400 bg-green-50/50 backdrop-blur-sm">
+          <Card className="border-2 border-dashed border-primary bg-card/50 backdrop-blur-sm">
             <CardContent className="px-6 py-12 text-center">
               <div className="flex flex-col items-center space-y-4">
-                <div className="w-20 h-20 bg-gradient-to-br from-green-400 to-emerald-500 rounded-full flex items-center justify-center">
-                  <Icon icon="material-symbols:check-circle" className="w-10 h-10 text-white" />
+                <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                  <Icon icon="material-symbols:check-circle" className="w-10 h-10 text-primary-foreground" />
                 </div>
                 <div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-2">Data Already Exists</h3>
-                  <p className="text-slate-600 mb-4">
+                  <h3 className="text-xl font-semibold text-foreground mb-2">Data Already Exists</h3>
+                  <p className="text-muted-foreground mb-4">
                     It looks like you already have data uploaded. You can proceed to explore.
                   </p>
                 </div>
@@ -340,7 +340,7 @@ export default function Home() {
 
         {/* Upload card */}
         {!dataExists && !isUploading && !isChecking && <Card
-          className={`border-2 border-dashed ${isDragOver ? 'border-teal-500 bg-teal-50' : 'border-slate-300'} hover:border-teal-400 transition-colors duration-300 bg-white/50 backdrop-blur-sm`}
+          className={`border-2 border-dashed ${isDragOver ? 'border-primary bg-muted' : 'border-border'} hover:border-primary transition-colors duration-300 bg-card/50 backdrop-blur-sm`}
           onDragOver={handleDragOver}
           onDragLeave={handleDragLeave}
           onDrop={handleDrop}
@@ -348,12 +348,12 @@ export default function Home() {
         >
           <CardContent className="px-6 py-12 text-center">
             <div className="flex flex-col items-center space-y-4">
-              <div className="w-20 h-20 bg-gradient-to-br from-cyan-400 to-teal-500 rounded-full flex items-center justify-center">
-                <Icon icon="material-symbols:cloud-upload" className="w-10 h-10 text-white" />
+              <div className="w-20 h-20 bg-gradient-to-br from-primary to-accent rounded-full flex items-center justify-center">
+                <Icon icon="material-symbols:cloud-upload" className="w-10 h-10 text-primary-foreground" />
               </div>
               <div>
-                <h3 className="text-xl font-semibold text-slate-800 mb-2">Upload your CSV file</h3>
-                <p className="text-slate-600 mb-4">
+                <h3 className="text-xl font-semibold text-foreground mb-2">Upload your CSV file</h3>
+                <p className="text-muted-foreground mb-4">
                   Drag and drop your file here, or click to browse
                 </p>
               </div>
@@ -364,10 +364,10 @@ export default function Home() {
                 accept=".csv"
                 className="hidden"
               />
-              <label className="bg-gradient-to-r from-cyan-500 to-teal-600 hover:from-cyan-600 hover:to-teal-700 text-white px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
+              <label className="bg-gradient-to-r from-primary to-secondary hover:from-primary/90 hover:to-secondary/90 text-primary-foreground px-8 py-3 rounded-lg font-medium transition-all duration-300 shadow-lg hover:shadow-xl">
                 Choose File
               </label>
-              <p className="text-sm text-slate-500">Supported formats: CSV files up to 200MB</p>
+              <p className="text-sm text-muted-foreground">Supported formats: CSV files up to 200MB</p>
             </div>
           </CardContent>
         </Card>}
@@ -376,67 +376,67 @@ export default function Home() {
 
         {/* 4 cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-6">
-          <Card className="bg-white/70 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-all duration-300">
+          <Card className="bg-card/70 backdrop-blur-sm border-border hover:shadow-lg transition-all duration-300">
             <CardContent className="px-6 py-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                  <Icon icon="material-symbols:domain" className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-primary to-secondary rounded-lg flex items-center justify-center">
+                  <Icon icon="material-symbols:domain" className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Domain</p>
-                  <p className="text-xl font-bold text-slate-800">{cardsData.domain}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Domain</p>
+                  <p className="text-xl font-bold text-foreground">{cardsData.domain}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white/70 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-all duration-300">
+          <Card className="bg-card/70 backdrop-blur-sm border-border hover:shadow-lg transition-all duration-300">
             <CardContent className="px-6 py-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-teal-500 to-teal-600 rounded-lg flex items-center justify-center">
-                  <Icon icon="material-symbols:table-rows" className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-secondary to-accent rounded-lg flex items-center justify-center">
+                  <Icon icon="material-symbols:table-rows" className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Total Rows</p>
-                  <p className="text-xl font-bold text-slate-800">{cardsData.total_rows}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Rows</p>
+                  <p className="text-xl font-bold text-foreground">{cardsData.total_rows}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white/70 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-all duration-300">
+          <Card className="bg-card/70 backdrop-blur-sm border-border hover:shadow-lg transition-all duration-300">
             <CardContent className="px-6 py-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-cyan-500 to-cyan-600 rounded-lg flex items-center justify-center">
-                  <Icon icon="material-symbols:view-column" className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-accent to-secondary rounded-lg flex items-center justify-center">
+                  <Icon icon="material-symbols:view-column" className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Total Columns</p>
-                  <p className="text-xl font-bold text-slate-800">{cardsData.total_columns}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Total Columns</p>
+                  <p className="text-xl font-bold text-foreground">{cardsData.total_columns}</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white/70 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-all duration-300">
+          <Card className="bg-card/70 backdrop-blur-sm border-border hover:shadow-lg transition-all duration-300">
             <CardContent className="px-6 py-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-orange-600 rounded-lg flex items-center justify-center">
-                  <Icon icon="material-symbols:warning" className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-destructive to-destructive/80 rounded-lg flex items-center justify-center">
+                  <Icon icon="material-symbols:warning" className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Missing Data</p>
-                  <p className="text-xl font-bold text-slate-800">{cardsData.missing_data_ratio}%</p>
+                  <p className="text-sm font-medium text-muted-foreground">Missing Data</p>
+                  <p className="text-xl font-bold text-foreground">{cardsData.missing_data_ratio}%</p>
                 </div>
               </div>
             </CardContent>
           </Card>
-          <Card className="bg-white/70 backdrop-blur-sm border-slate-200 hover:shadow-lg transition-all duration-300">
+          <Card className="bg-card/70 backdrop-blur-sm border-border hover:shadow-lg transition-all duration-300">
             <CardContent className="px-6 py-6">
               <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-                  <Icon icon="material-symbols:numbers" className="w-5 h-5 text-white" />
+                <div className="w-10 h-10 bg-gradient-to-br from-primary to-accent rounded-lg flex items-center justify-center">
+                  <Icon icon="material-symbols:numbers" className="w-5 h-5 text-primary-foreground" />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-slate-600">Numeric Columns</p>
-                  <p className="text-xl font-bold text-slate-800">{cardsData.num_numeric_columns}</p>
+                  <p className="text-sm font-medium text-muted-foreground">Numeric Columns</p>
+                  <p className="text-xl font-bold text-foreground">{cardsData.num_numeric_columns}</p>
                 </div>
               </div>
             </CardContent>
@@ -446,14 +446,14 @@ export default function Home() {
 
 
         {/* Table */}
-        <Card className="bg-gradient-to-br from-white/80 via-white/70 to-slate-50/80 backdrop-blur-sm border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300">
+        <Card className="bg-card/80 backdrop-blur-sm border-border shadow-xl hover:shadow-2xl transition-all duration-300">
           <CardHeader>
             <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
               <div>
-                <h2 className="font-heading text-2xl font-bold bg-gradient-to-r from-slate-800 to-slate-700 bg-clip-text text-transparent">
+                <h2 className="font-heading text-2xl font-bold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
                   Data Explorer
                 </h2>
-                <p className="text-slate-600 mt-1">
+                <p className="text-muted-foreground mt-1">
                   Advanced data exploration and insights platform
                 </p>
               </div>
@@ -466,10 +466,10 @@ export default function Home() {
                 <div className="relative">
                   <Icon
                     icon="material-symbols:search"
-                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-teal-500"
+                    className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-primary"
                   />
                   <Input
-                    className="pl-10 bg-white/80 backdrop-blur-sm border-slate-300 focus:border-teal-400 focus:ring-teal-400/20 shadow-sm"
+                    className="pl-10 bg-input/80 backdrop-blur-sm border-border focus:border-primary focus:ring-primary/20 shadow-sm"
                     placeholder="Search across all columns..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
@@ -480,21 +480,21 @@ export default function Home() {
                 <PopoverTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full lg:w-auto bg-white/80 backdrop-blur-sm border-slate-300 hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:border-teal-300 transition-all duration-300 shadow-sm"
+                    className="w-full lg:w-auto bg-input/80 backdrop-blur-sm border-border hover:bg-accent/10 hover:border-primary transition-all duration-300 shadow-sm"
                   >
                     <Icon
                       icon="material-symbols:view-column"
-                      className="w-4 h-4 mr-2 text-teal-600"
+                      className="w-4 h-4 mr-2 text-primary"
                     />
                     Columns
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent
                   align="end"
-                  className="w-64 bg-white/95 backdrop-blur-sm border-slate-200 shadow-xl"
+                  className="w-64 bg-popover/95 backdrop-blur-sm border-border shadow-xl"
                 >
                   <div className="space-y-3">
-                    <h4 className="font-medium text-sm text-slate-800">Toggle Columns</h4>
+                    <h4 className="font-medium text-sm text-popover-foreground">Toggle Columns</h4>
                     <div className="space-y-2">
                       {Object.keys(selectedColumns).map((columnName) => (
                         <div key={columnName} className="flex items-center space-x-2">
@@ -518,13 +518,13 @@ export default function Home() {
                 </PopoverContent>
               </Popover>
             </div>
-            <div className="rounded-xl border border-slate-200 overflow-hidden shadow-lg bg-white/50 backdrop-blur-sm">
+            <div className="rounded-xl border border-border overflow-hidden shadow-lg bg-card/50 backdrop-blur-sm">
               <Table>
                 <TableHeader>
-                  <TableRow className="bg-gradient-to-r from-slate-50/80 to-slate-100/60 border-b border-slate-200">
+                  <TableRow className="bg-muted/80 border-b border-border">
                     {filteredData.length > 0 && Object.keys(filteredData[0]).filter(feature => selectedColumns[feature]).map((feature)=>{
                       return (
-                        <TableHead key={feature} className="font-semibold bg-gradient-to-r from-slate-700 to-slate-600 bg-clip-text text-transparent">
+                        <TableHead key={feature} className="font-semibold bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent">
                         {feature}
                         </TableHead>
                       )
@@ -533,21 +533,21 @@ export default function Home() {
                 </TableHeader>
                 <TableBody>
                   {filteredData.length > 0 && filteredData.map((record, rowIndex) => (
-                    <TableRow key={rowIndex} className="hover:bg-gradient-to-r hover:from-teal-50/30 hover:to-cyan-50/30 transition-all duration-300 border-b border-slate-100">
+                    <TableRow key={rowIndex} className="hover:bg-accent/10 transition-all duration-300 border-b border-border">
                       {Object.keys(record).filter(feature => selectedColumns[feature]).map((feature, colIndex) => (
-                        <TableCell key={colIndex} className="text-slate-700">{String(record[feature])}</TableCell>
+                        <TableCell key={colIndex} className="text-foreground">{String(record[feature])}</TableCell>
                       ))}
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
             </div>
-            <div className="flex items-center justify-between bg-gradient-to-r from-slate-50/50 to-slate-100/30 p-4 rounded-lg border border-slate-200">
+            <div className="flex items-center justify-between bg-muted/50 p-4 rounded-lg border border-border">
               {!deletingData && <Pagination hidden={fetchingData}>
                 <PaginationContent>
                   <PaginationItem>
                     <PaginationPrevious
-                      className="hover:cursor-pointer hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:border-teal-200 transition-all duration-300"
+                      className="hover:cursor-pointer hover:bg-accent/10 hover:border-primary transition-all duration-300"
                       onClick={() => setPage(prev => Math.max(1, prev - 1))}
                     />
                   </PaginationItem>
@@ -559,7 +559,7 @@ export default function Home() {
                         <PaginationLink
                           isActive={page === p}
                           onClick={() => setPage(p as number)}
-                          className="hover:cursor-pointer hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 transition-all duration-300"
+                          className="hover:cursor-pointer hover:bg-accent/10 transition-all duration-300"
                         >
                           {p}
                         </PaginationLink>
@@ -568,7 +568,7 @@ export default function Home() {
                   ))}
                   <PaginationItem>
                     <PaginationNext
-                      className="hover:cursor-pointer hover:bg-gradient-to-r hover:from-teal-50 hover:to-cyan-50 hover:border-teal-200 transition-all duration-300"
+                      className="hover:cursor-pointer hover:bg-accent/10 hover:border-primary transition-all duration-300"
                       onClick={() => setPage(prev => Math.min(filteredLastPage, prev + 1))}
                     />
                   </PaginationItem>
